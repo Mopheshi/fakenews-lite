@@ -1,0 +1,401 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f5f5;
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #333;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+header .subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    font-weight: 300;
+}
+
+/* Alert */
+.alert {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.alert-warning strong {
+    color: #856404;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.alert-warning p {
+    color: #856404;
+    font-size: 0.9rem;
+}
+
+.alert code {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+/* Input Section */
+.input-section {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.tab {
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    color: #666;
+}
+
+.tab:hover {
+    border-color: #333;
+    color: #333;
+}
+
+.tab.active {
+    background: #333;
+    border-color: transparent;
+    color: white;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #444;
+}
+
+.form-group .required {
+    color: #e74c3c;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #333;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 8px;
+    color: #888;
+    font-size: 0.85rem;
+}
+
+/* Button */
+.btn-primary {
+    width: 100%;
+    padding: 16px 30px;
+    background: #333;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 10px;
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-primary .btn-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Spinner */
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Result Section */
+.result-section {
+    margin-top: 30px;
+}
+
+.result-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.result-icon {
+    font-size: 4rem;
+    margin-bottom: 15px;
+}
+
+.result-card h2 {
+    font-size: 2rem;
+    margin-bottom: 25px;
+}
+
+.result-card h2.fake {
+    color: #e74c3c;
+}
+
+.result-card h2.legit {
+    color: #27ae60;
+}
+
+/* Confidence Bar */
+.confidence-bar {
+    width: 100%;
+    height: 12px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.confidence-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.confidence-fill.fake {
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+}
+
+.confidence-fill.legit {
+    background: linear-gradient(90deg, #27ae60, #1e8449);
+}
+
+.confidence-text {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+#confidence-value {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Probability Grid */
+.probability-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.prob-item {
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.prob-item.fake {
+    background: #fdf2f2;
+    border: 1px solid #f8d7da;
+}
+
+.prob-item.legit {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+}
+
+.prob-label {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.prob-value {
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.prob-item.fake .prob-value {
+    color: #e74c3c;
+}
+
+.prob-item.legit .prob-value {
+    color: #27ae60;
+}
+
+/* Extracted Content */
+.extracted-content {
+    text-align: left;
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.extracted-content h3 {
+    font-size: 1rem;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.extracted-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.extracted-text {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.6;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Error Section */
+.error-section {
+    margin-top: 30px;
+}
+
+.error-card {
+    background: #fdf2f2;
+    border: 1px solid #f8d7da;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.error-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+#error-message {
+    color: #c0392b;
+    font-size: 1rem;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    .input-section {
+        padding: 20px;
+    }
+
+    .tabs {
+        flex-direction: column;
+    }
+
+    .probability-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .result-card {
+        padding: 25px;
+    }
+}
+

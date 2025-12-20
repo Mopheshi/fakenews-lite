@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fake News Detector</h1>
+            <p class="subtitle">Analyze news articles using AI-powered detection</p>
+        </header>
+
+        {% if not model_loaded %}
+        <div class="alert alert-warning">
+            <strong>⚠️ Model Not Loaded</strong>
+            <p>Please run the training script first: <code>python train_model.py</code></p>
+        </div>
+        {% endif %}
+
+        <div class="input-section">
+            <div class="tabs">
+                <button class="tab active" data-tab="text">📝 Paste Text</button>
+                <button class="tab" data-tab="url">🔗 From URL</button>
+            </div>
+
+            <div class="tab-content active" id="text-tab">
+                <div class="form-group">
+                    <label for="title">Article Title (optional)</label>
+                    <input type="text" id="title" placeholder="Enter the article headline...">
+                </div>
+                <div class="form-group">
+                    <label for="text">Article Text <span class="required">*</span></label>
+                    <textarea id="text" rows="8" placeholder="Paste the article content here..."></textarea>
+                </div>
+            </div>
+
+            <div class="tab-content" id="url-tab">
+                <div class="form-group">
+                    <label for="url">Article URL <span class="required">*</span></label>
+                    <input type="url" id="url" placeholder="https://example.com/news-article">
+                    <small>We'll automatically extract the article content</small>
+                </div>
+            </div>
+
+            <button id="analyze-btn" class="btn-primary" {% if not model_loaded %}disabled{% endif %}>
+                <span class="btn-text">Analyze Article</span>
+                <span class="btn-loading" style="display: none;">
+                    <span class="spinner"></span> Analyzing...
+                </span>
+            </button>
+        </div>
+
+        <div id="result-section" class="result-section" style="display: none;">
+            <div class="result-card">
+                <div id="result-icon" class="result-icon"></div>
+                <h2 id="result-prediction"></h2>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" id="confidence-fill"></div>
+                </div>
+                <p class="confidence-text">
+                    <span id="confidence-value"></span>% confidence
+                </p>
+
+                <div class="probability-grid">
+                    <div class="prob-item fake">
+                        <span class="prob-label">Fake Probability</span>
+                        <span class="prob-value" id="fake-prob"></span>
+                    </div>
+                    <div class="prob-item legit">
+                        <span class="prob-label">Legit Probability</span>
+                        <span class="prob-value" id="legit-prob"></span>
+                    </div>
+                </div>
+
+                <div class="extracted-content" id="extracted-content" style="display: none;">
+                    <h3>Extracted Content</h3>
+                    <p class="extracted-title" id="extracted-title"></p>
+                    <p class="extracted-text" id="extracted-text"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="error-section" class="error-section" style="display: none;">
+            <div class="error-card">
+                <span class="error-icon">❌</span>
+                <p id="error-message"></p>
+            </div>
+        </div>
+
+        <footer>
+            <p>Built with XGBoost & TextCNN • Trained on WELFake Dataset</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
+
