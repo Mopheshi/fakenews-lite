@@ -21,6 +21,7 @@ ENV/
 # IDE
 .idea/
 
-# Model files (optional - uncomment if needed)
-# *.pkl
+# Model files
+files
+*.pkl
 
