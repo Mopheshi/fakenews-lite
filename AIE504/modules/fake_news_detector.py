@@ -3,94 +3,126 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 
 class FakeNewsDetector:
-    """Demo class for making predictions on new articles"""
+    """
+    Unified detector that can use individual models or ensemble
+    """
 
-    def __init__(self, model, preprocessor, feature_extractor, model_type='xgboost', use_pos_features=False):
-        self.model = model
+    def __init__(self, xgboost_model=None, textcnn_model=None,
+                 preprocessor=None, feature_extractor_xgb=None,
+                 feature_extractor_cnn=None, ensemble_model=None,
+                 use_pos_features=False):
+        """
+        Args:
+            xgboost_model: Trained XGBoost model
+            textcnn_model: Trained TextCNN model
+            preprocessor: Text preprocessor
+            feature_extractor_xgb: Feature extractor for XGBoost
+            feature_extractor_cnn: Feature extractor for TextCNN
+            ensemble_model: Optional ensemble model to combine predictions
+            use_pos_features: Whether to use POS features
+        """
+        self.xgboost_model = xgboost_model
+        self.textcnn_model = textcnn_model
         self.preprocessor = preprocessor
-        self.feature_extractor = feature_extractor
-        self.model_type = model_type
+        self.feature_extractor_xgb = feature_extractor_xgb
+        self.feature_extractor_cnn = feature_extractor_cnn
+        self.ensemble_model = ensemble_model
         self.use_pos_features = use_pos_features
 
+    def _prepare_xgboost_features(self, combined_text, original_text):
+        """Prepare features for XGBoost model"""
+        X = self.feature_extractor_xgb.tfidf_vectorizer.transform([combined_text])
+        X = self.feature_extractor_xgb.svd.transform(X)
+
+        # Add POS features if enabled
+        if self.use_pos_features and self.preprocessor.use_pos_features:
+            pos_features = self.preprocessor.extract_pos_features(original_text)
+            pos_array = np.array([[pos_features[cat] for cat in self.preprocessor.pos_categories]])
+            X = np.hstack([X, pos_array])
+
+        return X
+
+    def _prepare_textcnn_features(self, combined_text):
+        """Prepare features for TextCNN model"""
+        sequences = self.feature_extractor_cnn.tokenizer.texts_to_sequences([combined_text])
+        X = pad_sequences(sequences, maxlen=500, padding='post', truncating='post')
+        return X
+
     def predict_article(self, title, text, verbose=False):
+        """
+        Predict if article is fake or legit
+
+        Returns:
+            Dictionary with prediction, confidence, and probabilities
+        """
         # Preprocess
         title_clean = self.preprocessor.preprocess(title)
         text_clean = self.preprocessor.preprocess(text)
         combined = title_clean + ' ' + text_clean
+        original_text = title + ' ' + text
 
         if verbose:
             print(f"\n[DEBUG] Preprocessed text (first 200 chars): {combined[:200]}...")
-            print(f"[DEBUG] Total tokens after preprocessing: {len(combined.split())}")
 
-        # Extract features based on model type
-        if self.model_type == 'xgboost':
-            X = self.feature_extractor.tfidf_vectorizer.transform([combined])
-            X = self.feature_extractor.svd.transform(X)
+        # Prepare features for each model
+        X_list = []
+        model_predictions = {}
 
-            # Add POS features if enabled
-            if self.use_pos_features and self.preprocessor.use_pos_features:
-                original_text = title + ' ' + text
-                pos_features = self.preprocessor.extract_pos_features(original_text)
-                pos_array = np.array([[pos_features[cat] for cat in self.preprocessor.pos_categories]])
-                X = np.hstack([X, pos_array])
-                if verbose:
-                    print(f"[DEBUG] POS features: {pos_features}")
+        if self.xgboost_model:
+            X_xgb = self._prepare_xgboost_features(combined, original_text)
+            X_list.append(X_xgb)
+
+            xgb_pred = self.xgboost_model.predict(X_xgb)[0]
+            xgb_proba = self.xgboost_model.predict_probabilities(X_xgb)[0]
+            model_predictions['XGBoost'] = {
+                'prediction': xgb_pred,
+                'probability': xgb_proba
+            }
+
+        if self.textcnn_model:
+            X_cnn = self._prepare_textcnn_features(combined)
+            X_list.append(X_cnn)
+
+            cnn_pred = self.textcnn_model.predict(X_cnn)[0]
+            cnn_proba = self.textcnn_model.predict_probabilities(X_cnn)[0]
+            model_predictions['TextCNN'] = {
+                'prediction': cnn_pred,
+                'probability': cnn_proba
+            }
+
+        # Use ensemble if available
+        if self.ensemble_model and len(X_list) > 1:
+            prediction = self.ensemble_model.predict(X_list)[0]
+            probability = self.ensemble_model.predict_proba_ensemble(X_list)[0]
 
             if verbose:
-                print(f"[DEBUG] Feature vector shape: {X.shape}")
-        else:  # text_cnn
-            sequences = self.feature_extractor.tokenizer.texts_to_sequences([combined])
-            X = pad_sequences(sequences, maxlen=500, padding='post', truncating='post')
-            if verbose:
-                # Count how many tokens were recognized vs OOV
-                original_tokens = combined.split()
-                recognized = sum(1 for t in original_tokens if t in self.feature_extractor.tokenizer.word_index)
-                print(
-                    f"[DEBUG] Tokens recognized by tokenizer: {recognized}/{len(original_tokens)} ({recognized / len(original_tokens) * 100:.1f}%)")
+                print(f"[DEBUG] Using ensemble method: {self.ensemble_model.method}")
+                print(f"[DEBUG] Individual model predictions:")
+                for name, pred in model_predictions.items():
+                    print(f"  {name}: pred={pred['prediction']}, proba={pred['probability']:.4f}")
+                print(f"[DEBUG] Ensemble: pred={prediction}, proba={probability:.4f}")
+        else:
+            # Use single model
+            if self.xgboost_model:
+                prediction = model_predictions['XGBoost']['prediction']
+                probability = model_predictions['XGBoost']['probability']
+            elif self.textcnn_model:
+                prediction = model_predictions['TextCNN']['prediction']
+                probability = model_predictions['TextCNN']['probability']
+            else:
+                raise ValueError("No model available for prediction")
 
-        prediction = self.model.predict(X)[0]
-        probability = self.model.predict_probabilities(X)[0]
+        # Calculate final results
+        # Label 0 = Legit, Label 1 = Fake
+        fake_prob = float(probability)
+        legit_prob = float(1 - probability)
 
-        if verbose:
-            print(f"[DEBUG] Raw prediction: {prediction}")
-            print(f"[DEBUG] Raw probability (P(class=1)=P(FAKE)): {probability:.4f}")
-
-        # IMPORTANT: Dataset documentation is INCORRECT!
-        # Actual data inspection shows:
-        #   Label 0 = REAL news (Reuters, professional sources)
-        #   Label 1 = FAKE news (sensationalist, clickbait, political attacks)
-        # probability = P(class 1) = P(FAKE)
-        fake_prob = probability
-        legit_prob = 1 - probability
-
-        result = {'prediction': 'FAKE' if prediction == 1 else 'LEGIT',
-            'confidence': float(fake_prob if prediction == 1 else legit_prob), 'fake_probability': float(fake_prob),
-            'legit_probability': float(legit_prob)}
+        result = {
+            'prediction': 'FAKE' if prediction == 1 else 'LEGIT',
+            'confidence': float(fake_prob if prediction == 1 else legit_prob),
+            'fake_probability': fake_prob,
+            'legit_probability': legit_prob,
+            'model_predictions': model_predictions if verbose else None
+        }
 
         return result
-
-    def demo_prediction(self):
-        print("\n" + "=" * 80)
-        print("FAKE NEWS DETECTION - INTERACTIVE DEMO")
-        print("=" * 80 + "\n")
-
-        # TODO: Test articles
-        examples = [{'title': 'Scientists Discover Cure for Common Cold',
-                     'text': 'Researchers at MIT have announced a breakthrough in treating the common cold...',
-                     'actual': 'This is an example - would need verification'},
-                    {'title': 'President Announces New Policy',
-                     'text': 'In a press conference today, officials outlined new measures...',
-                     'actual': 'This is an example - would need verification'}]
-
-        for i, example in enumerate(examples, 1):
-            print(f"Example {i}:")
-            print(f"Title: {example['title']}")
-            print(f"Text: {example['text'][:100]}...")
-
-            result = self.predict_article(example['title'], example['text'])
-
-            print(f"\nPrediction: {result['prediction']}")
-            print(f"Confidence: {result['confidence']:.2%}")
-            print(f"  - Fake probability: {result['fake_probability']:.2%}")
-            print(f"  - Legit probability: {result['legit_probability']:.2%}")
-            print("-" * 80 + "\n")

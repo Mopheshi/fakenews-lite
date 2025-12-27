@@ -18,10 +18,8 @@ class TextCNNModel:
         print("\nBUILDING TextCNN MODEL...")
         print("-" * 80)
 
-        # Input layer
         input_layer = Input(shape=(self.max_len,))
 
-        # Embedding layer
         if self.embedding_matrix is not None:
             embedding = Embedding(self.vocab_size, self.embedding_dim, weights=[self.embedding_matrix],
                                   input_length=self.max_len, trainable=False  # Freeze pre-trained embeddings
@@ -38,14 +36,11 @@ class TextCNNModel:
             pool = GlobalMaxPooling1D()(conv)
             conv_blocks.append(pool)
 
-        # Concatenate all features
         concat = Concatenate()(conv_blocks) if len(conv_blocks) > 1 else conv_blocks[0]
 
-        # Dense layers
         dense = Dense(128, activation='relu')(concat)
         dropout = Dropout(dropout_rate)(dense)
 
-        # Output layer
         output = Dense(1, activation='sigmoid')(dropout)
 
         self.model = Model(inputs=input_layer, outputs=output)
@@ -64,12 +59,10 @@ class TextCNNModel:
         print("\n[7] TRAINING TextCNN MODEL...")
         print("-" * 80)
 
-        # Callbacks
         early_stop = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True, verbose=1)
 
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=2, min_lr=1e-7, verbose=1)
 
-        # Train model
         history = self.model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=epochs, batch_size=batch_size,
                                  callbacks=[early_stop, reduce_lr], verbose=1)
 

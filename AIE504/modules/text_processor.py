@@ -1,11 +1,12 @@
 import re
 import string
 from collections import Counter
+from functools import lru_cache
 
 import pandas as pd
+from nltk import pos_tag, word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from nltk import pos_tag, word_tokenize
 
 
 def clean_text(text):
@@ -13,26 +14,12 @@ def clean_text(text):
         return ""
 
     text = str(text).lower()
-
-    # Remove URLs
     text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
-
-    # Remove HTML tags
     text = re.sub(r'<.*?>', '', text)
-
-    # Remove email addresses
     text = re.sub(r'\S+@\S+', '', text)
-
-    # Remove mentions and hashtags
     text = re.sub(r'@\w+|#\w+', '', text)
-
-    # Remove numbers
     text = re.sub(r'\d+', '', text)
-
-    # Remove punctuation
     text = text.translate(str.maketrans('', '', string.punctuation))
-
-    # Remove extra whitespace
     text = ' '.join(text.split())
 
     return text
@@ -56,16 +43,32 @@ class TextPreprocessor:
             'modals': ['MD'],
         }
 
+        # Cache for POS features to avoid recomputation
+        self._pos_cache = {}
+
+    @lru_cache(maxsize=10000)
+    def _cached_tokenize(self, text):
+        """Cached tokenization to avoid redundant processing"""
+        return tuple(word_tokenize(text))
+
     def extract_pos_features(self, text):
-        """Extract POS-based features from text"""
+        """
+        Optimised POS feature extraction with caching
+        """
         if not text or len(text.strip()) == 0:
             return {cat: 0.0 for cat in self.pos_categories}
 
+        # Check cache first
+        text_hash = hash(text)
+        if text_hash in self._pos_cache:
+            return self._pos_cache[text_hash]
+
         try:
-            tokens = word_tokenize(text)
+            tokens = self._cached_tokenize(text)
             if len(tokens) == 0:
                 return {cat: 0.0 for cat in self.pos_categories}
 
+            # Batch POS tagging is more efficient
             pos_tags = pos_tag(tokens)
             tag_counts = Counter(tag for word, tag in pos_tags)
             total_tokens = len(tokens)
@@ -76,9 +79,30 @@ class TextPreprocessor:
                 count = sum(tag_counts.get(tag, 0) for tag in tags)
                 features[category] = count / total_tokens
 
+            # Cache the result
+            self._pos_cache[text_hash] = features
             return features
         except Exception:
             return {cat: 0.0 for cat in self.pos_categories}
+
+    def extract_pos_features_batch(self, texts):
+        """
+        Batch processing for POS features - more efficient for large datasets
+        """
+        print(f"  Extracting POS features for {len(texts)} texts in batch mode...")
+
+        results = []
+        batch_size = 1000
+
+        for i in range(0, len(texts), batch_size):
+            batch = texts[i:i + batch_size]
+            batch_results = [self.extract_pos_features(text) for text in batch]
+            results.extend(batch_results)
+
+            if (i + batch_size) % 5000 == 0:
+                print(f"    Processed {min(i + batch_size, len(texts))}/{len(texts)} texts...")
+
+        return results
 
     def remove_stopwords(self, text):
         words = text.split()
@@ -114,16 +138,17 @@ class TextPreprocessor:
         # Concatenate title and text (title gets more weight by appearing first)
         df['combined'] = df['title_clean'] + ' ' + df['text_clean']
 
-        # Extract POS features if enabled
+        # Extract POS features if enabled (optimised batch processing)
         if self.use_pos_features:
-            print("  Extracting POS features (this may take a while)...")
-            # Use original text for POS tagging (before preprocessing removes structure)
-            combined_original = df['title'] + ' ' + df['text']
-            pos_features = combined_original.apply(self.extract_pos_features)
+            print("  Extracting POS features (using optimised batch processing)...")
+            combined_original = (df['title'] + ' ' + df['text']).tolist()
 
-            # Convert to separate columns
+            # Use batch processing for efficiency
+            pos_features_list = self.extract_pos_features_batch(combined_original)
+
+            # Convert to dataframe columns
             for category in self.pos_categories:
-                df[f'pos_{category}'] = pos_features.apply(lambda x: x.get(category, 0.0))
+                df[f'pos_{category}'] = [feat.get(category, 0.0) for feat in pos_features_list]
 
             print(f"  POS features extracted: {list(self.pos_categories.keys())}")
 
@@ -132,5 +157,11 @@ class TextPreprocessor:
 
         print(f"  Preprocessing complete")
         print(f"  Final dataset size: {len(df)} articles")
+        print(f"  Cache size: {len(self._pos_cache)} entries")
 
         return df
+
+    def clear_cache(self):
+        """Clear the POS feature cache to free memory"""
+        self._pos_cache.clear()
+        self._cached_tokenize.cache_clear()

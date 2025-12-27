@@ -1,8 +1,3 @@
-"""
-Fake News Detection Web Application
-A simple Flask-based web UI for testing fake news detection models.
-"""
-
 import os
 import pickle
 import re
@@ -11,7 +6,6 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-# Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from flask import Flask, render_template, request, jsonify
@@ -23,11 +17,8 @@ from modules.fake_news_detector import FakeNewsDetector
 
 app = Flask(__name__)
 
-# Global variables for models
+# Global variables
 detector = None
-preprocessor = None
-feature_extractor = None
-model = None
 model_loaded = False
 
 
@@ -35,51 +26,41 @@ def extract_article_from_url(url):
     """Extract article title and text from a URL"""
     try:
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
 
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Try to extract title
+        # Extract title
         title = ""
         if soup.find('h1'):
             title = soup.find('h1').get_text(strip=True)
         elif soup.find('title'):
             title = soup.find('title').get_text(strip=True)
 
-        # Try to extract article text
+        # Extract text
         text = ""
-
-        # Common article containers
         article_selectors = [
-            'article',
-            '[class*="article"]',
-            '[class*="content"]',
-            '[class*="post"]',
-            '[class*="story"]',
-            'main',
-            '.entry-content',
-            '#content'
+            'article', '[class*="article"]', '[class*="content"]',
+            '[class*="post"]', '[class*="story"]', 'main',
+            '.entry-content', '#content'
         ]
 
         for selector in article_selectors:
             article = soup.select_one(selector)
             if article:
-                # Get all paragraphs
                 paragraphs = article.find_all('p')
                 if paragraphs:
                     text = ' '.join([p.get_text(strip=True) for p in paragraphs])
-                    if len(text) > 200:  # Reasonable article length
+                    if len(text) > 200:
                         break
 
-        # Fallback: get all paragraphs from page
         if len(text) < 200:
             paragraphs = soup.find_all('p')
             text = ' '.join([p.get_text(strip=True) for p in paragraphs])
 
-        # Clean up text
         text = re.sub(r'\s+', ' ', text).strip()
 
         if not title and not text:
@@ -95,7 +76,7 @@ def extract_article_from_url(url):
 
 def load_models():
     """Load or train the models"""
-    global detector, preprocessor, feature_extractor, model, model_loaded
+    global detector, model_loaded
 
     model_path = os.path.join(os.path.dirname(__file__), 'saved_model.pkl')
 
@@ -105,20 +86,31 @@ def load_models():
             with open(model_path, 'rb') as f:
                 saved_data = pickle.load(f)
 
+            # Extract components
+            xgboost_model = saved_data.get('xgboost_model')
+            textcnn_model = saved_data.get('textcnn_model')
             preprocessor = saved_data['preprocessor']
-            feature_extractor = saved_data['feature_extractor']
-            model = saved_data['model']
+            feature_extractor_xgb = saved_data.get('feature_extractor_xgb')
+            feature_extractor_cnn = saved_data.get('feature_extractor_cnn')
+            ensemble_model = saved_data.get('ensemble_model')
+            use_pos_features = saved_data.get('use_pos_features', False)
 
+            # Create ensemble detector
             detector = FakeNewsDetector(
-                model=model,
+                xgboost_model=xgboost_model,
+                textcnn_model=textcnn_model,
                 preprocessor=preprocessor,
-                feature_extractor=feature_extractor,
-                model_type='xgboost',
-                use_pos_features=False
+                feature_extractor_xgb=feature_extractor_xgb,
+                feature_extractor_cnn=feature_extractor_cnn,
+                ensemble_model=ensemble_model,
+                use_pos_features=use_pos_features
             )
+
             model_loaded = True
-            print("Model loaded successfully!")
+            model_type = "Ensemble" if ensemble_model else "Single Model"
+            print(f"{model_type} loaded successfully!")
             return True
+
         except Exception as e:
             print(f"Error loading model: {e}")
             return False
@@ -126,9 +118,8 @@ def load_models():
         print("=" * 60)
         print("NO SAVED MODEL FOUND!")
         print("=" * 60)
-        print("\nPlease run the training script first to create a model:")
+        print("\nPlease run the training script first:")
         print("  python train_model.py")
-        print("\nOr run the main notebook to train the models.")
         print("=" * 60)
         return False
 
@@ -139,8 +130,8 @@ def index():
     return render_template('index.html', model_loaded=model_loaded)
 
 
-@app.route('/analyze', methods=['POST'])
-def analyze():
+@app.route('/analyse', methods=['POST'])
+def analyse():
     """Analyse text or URL for fake news"""
     if not model_loaded:
         return jsonify({
@@ -181,7 +172,8 @@ def analyze():
             'fake_probability': round(result['fake_probability'] * 100, 1),
             'legit_probability': round(result['legit_probability'] * 100, 1),
             'title': title[:200] + '...' if len(title) > 200 else title,
-            'text_preview': text[:500] + '...' if len(text) > 500 else text
+            'text_preview': text[:500] + '...' if len(text) > 500 else text,
+            'model_type': 'Ensemble' if detector.ensemble_model else 'Single Model'
         })
 
     except Exception as e:
@@ -193,7 +185,8 @@ def health():
     """Health check endpoint"""
     return jsonify({
         'status': 'ok',
-        'model_loaded': model_loaded
+        'model_loaded': model_loaded,
+        'model_type': 'Ensemble' if (detector and detector.ensemble_model) else 'Single Model'
     })
 
 
@@ -208,4 +201,4 @@ if __name__ == '__main__':
         app.run(debug=True, host='127.0.0.1', port=5000)
     else:
         print("\nCannot start server without a trained model.")
-        print("Please run 'python train_model.py' first.")
+        print("Please run 'python train_model_ensemble.py' first.")

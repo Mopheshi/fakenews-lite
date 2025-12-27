@@ -14,7 +14,7 @@ class DataLoader:
         print(f"  Columns: {list(df.columns)}")
 
         print(f"\n  Label distribution:")
-        # NOTE: Dataset documentation is INCORRECT!
+        # OBSERVATION: The WELFake Dataset documentation is INCORRECT!
         # Actual content inspection shows: Label 0 = Legit, Label 1 = Fake
         print(f"    Legit news (0): {(df['label'] == 0).sum()}")
         print(f"    Fake news (1): {(df['label'] == 1).sum()}")

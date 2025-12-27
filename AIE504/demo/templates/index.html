@@ -11,7 +11,7 @@
     <div class="container">
         <header>
             <h1>Fake News Detector</h1>
-            <p class="subtitle">Analyze news articles using AI-powered detection</p>
+            <p class="subtitle">Analyse news articles using AI-powered detection</p>
         </header>
 
         {% if not model_loaded %}
@@ -46,10 +46,10 @@
                 </div>
             </div>
 
-            <button id="analyze-btn" class="btn-primary" {% if not model_loaded %}disabled{% endif %}>
-                <span class="btn-text">Analyze Article</span>
+            <button id="analyse-btn" class="btn-primary" {% if not model_loaded %}disabled{% endif %}>
+                <span class="btn-text">Analyse Article</span>
                 <span class="btn-loading" style="display: none;">
-                    <span class="spinner"></span> Analyzing...
+                    <span class="spinner"></span> Analysing...
                 </span>
             </button>
         </div>
@@ -92,7 +92,7 @@
         </div>
 
         <footer>
-            <p>Built with XGBoost & TextCNN • Trained on WELFake Dataset</p>
+            <p>Built with XGBoost & TextCNN & (XGBoost + TextCNN) • Trained on the WELFake Dataset</p>
         </footer>
     </div>
 

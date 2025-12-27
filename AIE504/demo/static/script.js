@@ -14,19 +14,19 @@ document.querySelectorAll('.tab').forEach(tab => {
     });
 });
 
-// Analyze button click
-document.getElementById('analyze-btn').addEventListener('click', analyzeArticle);
+// Analyse button click
+document.getElementById('analyse-btn').addEventListener('click', analyseArticle);
 
 // Allow Enter key in URL field
 document.getElementById('url').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
-        analyzeArticle();
+        analyseArticle();
     }
 });
 
-function analyzeArticle() {
+function analyseArticle() {
     const activeTab = document.querySelector('.tab.active').dataset.tab;
-    const btn = document.getElementById('analyze-btn');
+    const btn = document.getElementById('analyse-btn');
 
     let payload = {
         input_type: activeTab
@@ -57,7 +57,7 @@ function analyzeArticle() {
     hideResults();
 
     // Make API request
-    fetch('/analyze', {
+    fetch('/analyse', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

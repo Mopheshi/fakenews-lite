@@ -45,13 +45,13 @@ Then open http://127.0.0.1:5000 in your browser.
 1. Click the "📝 Paste Text" tab
 2. Enter the article headline (optional)
 3. Paste the article content
-4. Click "Analyze Article"
+4. Click "Analyse Article"
 
 ### Option 2: From URL
 1. Click the "🔗 From URL" tab
 2. Enter the news article URL
-3. Click "Analyze Article"
-4. The app will automatically extract and analyze the content
+3. Click "Analyse Article"
+4. The app will automatically extract and analyse the content
 
 ## Project Structure
 
@@ -71,7 +71,7 @@ demo/
 ## API Endpoints
 
 - `GET /` - Main page
-- `POST /analyze` - Analyze article (JSON payload)
+- `POST /analyse` - Analyse article (JSON payload)
 - `GET /health` - Health check
 
 ## Notes
