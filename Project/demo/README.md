@@ -131,7 +131,7 @@ Then open **http://127.0.0.1:5000** in your browser.
 
 ### Option 1: Paste Text
 
-1. Click the **"📝 Paste Text"** tab
+1. Click the **"Paste Text"** tab
 2. Enter the article headline (optional but recommended)
 3. Paste the article content
 4. Click **"Analyse Article"**
@@ -139,7 +139,7 @@ Then open **http://127.0.0.1:5000** in your browser.
 
 ### Option 2: From URL
 
-1. Click the **"🔗 From URL"** tab
+1. Click the **"From URL"** tab
 2. Enter the complete news article URL (include https://)
 3. Click **"Analyse Article"**
 4. The app automatically extracts title and content
