@@ -1,6 +1,6 @@
 # Large data files
-AIE504/files/glove.6B.100d.txt
-AIE504/files/WELFake_Dataset.csv
+Project/files/glove.6B.100d.txt
+Project/files/WELFake_Dataset.csv
 
 # Python
 __pycache__/
