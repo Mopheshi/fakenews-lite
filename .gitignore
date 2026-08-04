@@ -1,6 +1,11 @@
-# Large data files
-Project/files/glove.6B.100d.txt
-Project/files/WELFake_Dataset.csv
+# Datasets and embeddings (downloaded, not vendored -- see README)
+data/raw/
+data/embeddings/
+data/cache/
+
+# Generated models, metrics and figures
+artifacts/
+/paper/
 
 # Python
 __pycache__/
@@ -11,17 +16,26 @@ __pycache__/
 *.egg-info/
 .eggs/
 *.egg
+build/
+dist/
 .venv/
 venv/
 ENV/
 
-# Jupyter Notebook
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Jupyter
 .ipynb_checkpoints/
 
-# IDE
+# IDE / assistants
 .idea/
+.vscode/
+.claude/
+.junie/
 
-# Model files
-files
+# Serialised models
 *.pkl
-
+*.keras

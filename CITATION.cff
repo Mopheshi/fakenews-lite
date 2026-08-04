@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+title: "fakenews-lite: a lightweight XGBoost + TextCNN ensemble for fake news detection"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - name: "fakenews-lite contributors"
+license: MIT
+version: 1.0.0
+repository-code: "https://github.com/OWNER/fakenews-lite"
+keywords:
+  - fake news detection
+  - ensemble learning
+  - part-of-speech features
+  - WELFake
+abstract: >-
+  An XGBoost and TextCNN soft-voting ensemble over TF-IDF, part-of-speech ratio
+  features and frozen GloVe embeddings, trained and served on CPU. The repository
+  ships the ablations, leakage tests, efficiency benchmarks and paired
+  significance tests behind the reported figures.
