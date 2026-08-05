@@ -18,6 +18,18 @@ ruff check .
 pytest
 ```
 
+Or run the full CI pipeline locally, which mirrors
+`.github/workflows/ci.yml` step for step:
+
+```bash
+./scripts/ci-local.sh --skip-install       # macOS / Linux / Git Bash
+pwsh ./scripts/ci-local.ps1 -SkipInstall   # PowerShell
+```
+
+It exercises a single interpreter; CI runs the 3.11/3.12/3.13 matrix. Point it
+elsewhere with `PYTHON=python3.11 ./scripts/ci-local.sh` or
+`-Python C:\path\to\python.exe` to check another version.
+
 The unit tests deliberately require neither the dataset nor the GloVe file, so
 they run in seconds and in CI. Anything that needs the corpus belongs in
 `experiments/`, not in `tests/`.

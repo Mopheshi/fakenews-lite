@@ -1,0 +1,27 @@
+# Normalise line endings so a Windows checkout does not produce files that break
+# elsewhere. Shell scripts in particular must stay LF: a CRLF shebang makes Linux
+# report "bad interpreter".
+* text=auto
+
+*.sh   text eol=lf
+*.ps1  text eol=crlf
+
+*.py   text
+*.md   text
+*.yml  text
+*.yaml text
+*.toml text
+*.cff  text
+*.json text
+
+# Binary assets Git must not touch.
+*.pdf    binary
+*.png    binary
+*.jpg    binary
+*.keras  binary
+*.pkl    binary
+*.parquet binary
+*.npz    binary
+
+# Notebooks diff badly; mark them so review tools do not try to merge them.
+*.ipynb  text -merge

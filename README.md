@@ -4,23 +4,25 @@ Fake news detection with an **XGBoost + TextCNN soft-voting ensemble** over
 TF-IDF, part-of-speech ratios and frozen GloVe embeddings — trained and served
 on a CPU.
 
-The point of this repository is not another accuracy number. It is that the
-accuracy number comes with the evidence that usually goes missing: an ablation
-showing whether the POS features earn their place, a leakage test showing how
-much of the score is publisher memorisation, a measured efficiency benchmark
-instead of a quoted ratio, and paired significance tests instead of a
-decimal-place comparison.
+This is the reference implementation for *Lightweight Ensemble Fake News
+Detection on Commodity CPUs: A Measured Comparison of Cost and Accuracy*.
+
+The question the paper asks is how much accuracy is lost when a GPU is not
+available — and the point of this repository is that the answer comes with the
+evidence that usually goes missing: an ablation showing whether the POS features
+earn their place, a leakage test showing how much of the score is publisher
+memorisation, a measured cost profile on named hardware instead of a quoted
+ratio, and paired significance tests instead of a decimal-place comparison.
 
 ## What is here
 
 ```
 src/fakenews/          Library: data, features, models, evaluation, pipeline, CLI
-experiments/           One script per result in the paper
+experiments/           One script per table and figure in the paper
 app/                   Flask demo (paste an article or a URL)
 tests/                 Unit tests
-docs/                  Label semantics, reproduction guide
+docs/                  Label semantics, reproduction guide, figure conventions
 notebooks/             Guided walkthrough of the library
-paper/                 Manuscript and the revision document
 ```
 
 ## Install
@@ -47,8 +49,8 @@ Override with `FAKENEWS_WELFAKE_CSV` and `FAKENEWS_GLOVE_TXT`.
 ## Quick start
 
 ```bash
-fakenews build-cache              # clean + POS-tag once (~20 min, cached thereafter)
-python experiments/run_main.py    # train, evaluate, save models (~20 min)
+fakenews build-cache              # clean + POS-tag once (~30 min, cached thereafter)
+python experiments/run_main.py    # train, evaluate, save models (~16 min)
 python app/app.py                 # serve the demo at http://127.0.0.1:5000
 ```
 
@@ -79,7 +81,18 @@ end-to-end, 256 ms mean latency per article (p95 307 ms), 1.2 GB peak RSS,
 62 MB on disk. 256,432 learned parameters — 429× fewer than BERT-base, or 21×
 smaller counting the frozen GloVe table.
 
-**Two findings worth knowing before you build on this:**
+That places the ensemble **1.06 points below the strongest reported BERT result**
+on this dataset (98.87%) and 1.91 below GPT-2 (99.72%), at roughly one
+four-hundredth of the learned parameters. This is a cost–accuracy trade, not a
+win: whether a percentage point is worth a GPU depends on the deployment. The
+contribution is making the trade measurable, not deciding it.
+
+No speed-up ratio against a transformer is claimed anywhere here. None was
+retrained under this protocol, and published inference times for this dataset are
+GPU forward passes over truncated input, which are not comparable to an
+end-to-end CPU measurement over full articles.
+
+**Two findings you should know before you build on this:**
 
 - **The POS features do not improve accuracy.** Adverb and pronoun ratios do
   separate the classes (Cohen's *d* ≈ 0.5) and XGBoost ranks adverbs 7th of its
@@ -132,9 +145,10 @@ that all the experiments share. The blocklist text variants are materialised in
 the same pass.
 
 **Seeds flow from one place.** `ExperimentConfig.seed` reaches the split, the
-SVD, XGBoost and every Keras initialiser. Run-to-run variation still lands in
-the fourth decimal, which is why results are reported as mean ± SD across seeds
-rather than as a single figure.
+SVD, XGBoost and every Keras initialiser. TensorFlow's default CPU kernels are
+still not deterministic across thread schedules, so single-run accuracy varies in
+the third decimal place (TextCNN SD 0.0031). That is why results are reported as
+mean ± SD over five seeds rather than as a single figure.
 
 **Metrics are reported per class.** Because the positive class is ambiguous in
 this dataset, `ClassificationResult` carries per-class precision/recall/F1 and a
@@ -153,6 +167,26 @@ can be read for what it is.
 pytest          # unit tests, no dataset required
 ruff check .
 ```
+
+To run the whole CI pipeline locally — install, NLTK resources, lint, tests —
+exactly as `.github/workflows/ci.yml` does:
+
+```bash
+./scripts/ci-local.sh                  # macOS / Linux / Git Bash
+pwsh ./scripts/ci-local.ps1            # PowerShell
+```
+
+Add `--skip-install` (or `-SkipInstall`) when the environment is already set up.
+This exercises one interpreter; CI covers 3.11, 3.12 and 3.13.
+
+## Citing
+
+If you use this code, cite the software via [`CITATION.cff`](CITATION.cff) —
+GitHub renders a "Cite this repository" button from it.
+
+The accompanying paper, *Lightweight Ensemble Fake News Detection on Commodity
+CPUs: A Measured Comparison of Cost and Accuracy*, is under review. This section
+will be updated with the publication reference on acceptance.
 
 ## Licence
 

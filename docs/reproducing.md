@@ -26,7 +26,7 @@ Two files are downloaded, not vendored:
 
 Override either location with `FAKENEWS_WELFAKE_CSV` / `FAKENEWS_GLOVE_TXT`.
 
-## 2. Build the preprocessing cache (once, ~20 min)
+## 2. Build the preprocessing cache (once, ~30 min)
 
 ```bash
 fakenews build-cache --jobs -1
@@ -41,15 +41,23 @@ shared by every experiment below, so it is done once.
 Run `run_main.py` first: it saves the fitted models and the test-set prediction
 arrays that three of the other scripts consume.
 
-| Script | Produces | Approx. cost |
+| Script | Produces | Measured cost |
 | --- | --- | --- |
-| `run_main.py` | Tables I–IV, Figure 1, saved models | ~20 min |
-| `run_pos_ablation.py` | POS effect sizes, ablation, gain shares, Figure 2 | ~8 min |
-| `run_svd_sweep.py` | Component sweep, Figure 3 | ~25 min |
-| `run_leakage.py` | Source-marker removal deltas, Figure 4 | ~45 min |
-| `run_seeds.py` | Mean ± SD over 5 seeds, McNemar tests | ~80 min |
-| `run_efficiency.py` | Parameter accounting, latency, memory, disk | ~5 min |
-| `run_xgb_tuning.py` | Fixed-versus-tuned XGBoost gap | ~60 min |
+| `run_main.py` | Table 1 single-run columns, error counts, saved models | 16.1 min |
+| `run_pos_ablation.py` | Table 3, Figure 1, gain shares | 4.9 min |
+| `run_efficiency.py` | Table 4 | 4.6 min |
+| `run_svd_sweep.py` | Figure 3, §4.5 | 20.7 min |
+| `run_leakage.py` | Figure 2, §4.4 | 30.7 min |
+| `run_seeds.py` | Table 1 five-seed columns, Table 2 | ~65 min |
+| `run_xgb_tuning.py` | Quantifies the untuned-baseline gap (§3.3, §5.4) | ~60 min |
+
+Table 5 compares against published figures and is assembled by hand from the
+cited papers; no script produces it, because no transformer was retrained here.
+Figure 4 is a screenshot of the Flask app in `app/`.
+
+`run_main.py` also writes `model_comparison.{pdf,png}`, a dot plot of all five
+models. The paper presents that comparison as Table 1 instead, so the figure is
+unused there — it is kept because it is useful when iterating.
 
 ```bash
 python experiments/run_main.py
