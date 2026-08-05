@@ -47,7 +47,6 @@ keywords:
   - TextCNN
   - CPU Inference
   - Computational Eﬀiciency
-Inference, Computational Eﬀiciency.
 abstract: >-
   Most recent work on fake news detection reaches for transformer models, which perform well but need a GPU
   and a good deal of time to train. This paper asks a simpler question: how much accuracy is lost when those
