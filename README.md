@@ -47,7 +47,7 @@ Override with `FAKENEWS_WELFAKE_CSV` and `FAKENEWS_GLOVE_TXT`.
 ## Quick start
 
 ```bash
-fakenews build-cache          # clean + POS-tag once (~20 min, cached thereafter)
+fakenews build-cache              # clean + POS-tag once (~20 min, cached thereafter)
 python experiments/run_main.py    # train, evaluate, save models (~20 min)
 python app/app.py                 # serve the demo at http://127.0.0.1:5000
 ```

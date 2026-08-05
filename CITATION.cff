@@ -3,10 +3,41 @@ title: "fakenews-lite: a lightweight XGBoost + TextCNN ensemble for fake news de
 message: "If you use this software, please cite it as below."
 type: software
 authors:
-  - name: "fakenews-lite contributors"
+  - given-names: Ndachimya Magaji
+    family-names: Edward
+    affiliation: Istanbul Okan University
+    email: ndachimya@gmail.com
+  - given-names: Louis
+    family-names: Obadiah
+    affiliation: Istanbul Okan University
+    email: louisobadiah@gmail.com
+  - given-names: Jibrailu
+    family-names: Daniel
+    affiliation: Istanbul Okan University
+    email: jibrailudaniel@gmail.com
+  - given-names: Nibras
+    family-names: Abubakar
+    affiliation: Istanbul Okan University
+    email: nibrasabubakar@gmail.com
+  - given-names: Chahya'andida
+    family-names: Ishaya
+    affiliation: Istanbul Okan University
+    email: chahyaandidaishaya@gmail.com
+  - given-names: Daniel
+    family-names: Godwin
+    affiliation: Istanbul Okan University
+    email: danspeakfuture@gmail.com
+  - given-names: Yusuf
+    family-names: Garga
+    affiliation: Istanbul Okan University
+    email: yusufgarga@gmail.com
+  - given-names: Nyibong
+    family-names: George
+    affiliation: Istanbul Okan University
+    email: nyibonggeorge01@gmail.com
 license: MIT
 version: 1.0.0
-repository-code: "https://github.com/OWNER/fakenews-lite"
+repository-code: "https://github.com/Mopheshi/fakenews-lite"
 keywords:
   - fake news detection
   - ensemble learning
