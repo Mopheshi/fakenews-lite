@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "fakenews-lite: a lightweight XGBoost + TextCNN ensemble for fake news detection"
+title: "Lightweight Ensemble Fake News Detection on Commodity CPUs: A Measured Comparison of Cost and Accuracy"
 message: "If you use this software, please cite it as below."
 type: software
 authors:
@@ -39,12 +39,24 @@ license: MIT
 version: 1.0.0
 repository-code: "https://github.com/Mopheshi/fakenews-lite"
 keywords:
-  - fake news detection
-  - ensemble learning
-  - part-of-speech features
+  - Fake News Detection
+  - Ensemble Learning
+  - Part-Of-Speech Features
   - WELFake
+  - XGBoost
+  - TextCNN
+  - CPU Inference
+  - Computational Eﬀiciency
+Inference, Computational Eﬀiciency.
 abstract: >-
-  An XGBoost and TextCNN soft-voting ensemble over TF-IDF, part-of-speech ratio
-  features and frozen GloVe embeddings, trained and served on CPU. The repository
-  ships the ablations, leakage tests, efficiency benchmarks and paired
-  significance tests behind the reported figures.
+  Most recent work on fake news detection reaches for transformer models, which perform well but need a GPU
+  and a good deal of time to train. This paper asks a simpler question: how much accuracy is lost when those
+  resources are not available? We combine an XGBoost model over TF-IDF and part-of-speech features with a
+  TextCNN over frozen GloVe embeddings, and merge the two by soft voting. On the WELFake dataset of 72,134
+  articles the ensemble reaches an accuracy of 97.81% ± 0.20 across five random seeds, within 1.1 percentage
+  points of a fine-tuned BERT reported on the same data, using 429× fewer learned parameters. The full pipeline
+  trains in 14.9 minutes and classifies an article in 256 ms on a four-core consumer CPU with no GPU. We also
+  report two controls the literature on this dataset has left out. Removing publisher and wire-service tokens costs
+  at most 0.82 percentage points, so the result is not publisher memorisation. The part-of-speech features carry
+  a measurable syntactic signal but add no accuracy the lexical representation does not already supply, and we
+  report that null result plainly.
