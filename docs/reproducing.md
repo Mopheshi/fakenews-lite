@@ -142,6 +142,25 @@ That pins BLAS, OpenMP (which is what XGBoost's `n_jobs=-1` actually obeys) and
 TensorFlow to one thread, and records the thread counts that applied while the
 timer ran rather than the ones requested.
 
+Measured on the reference machine, 1,000 articles per run:
+
+| Configuration | Mean | Median | p95 |
+| --- | --- | --- | --- |
+| Unconstrained (cooled machine) | 364.79 ms | 261.32 ms | 717.66 ms |
+| 1 thread, run 1 | 259.55 ms | 207.81 ms | 611.69 ms |
+| 1 thread, run 2 | 233.64 ms | 204.55 ms | 346.24 ms |
+
+One thread is *faster*. Four physical cores running eight BLAS threads plus
+eight OpenMP threads is oversubscription, and the per-article work is far too
+small to pay for the dispatch: a single SVD transform, 200 tree traversals and
+one small forward pass. Mean sits well above median in every run because POS
+tagging scales with article length and the corpus has a long tail.
+
+These figures are laptop measurements and move with thermal state. An
+unconstrained run taken immediately after another benchmark gave 393.02 ms
+against the 364.79 ms above, so leave the machine idle for a few minutes before
+timing anything that will be quoted.
+
 ## Package versions
 
 The reference results were produced with:
