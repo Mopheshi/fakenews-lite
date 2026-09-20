@@ -23,8 +23,14 @@ Two files are downloaded, not vendored:
 | --- | --- | --- |
 | `WELFake_Dataset.csv` | `data/raw/` | <https://zenodo.org/records/4561253> |
 | `glove.6B.100d.txt` | `data/embeddings/` | <https://nlp.stanford.edu/projects/glove/> (`glove.6B.zip`) |
+| `fakeNewsDatasets/` | `data/raw/` | <https://web.eecs.umich.edu/~mihalcea/downloads/fakeNewsDatasets.zip> |
 
-Override either location with `FAKENEWS_WELFAKE_CSV` / `FAKENEWS_GLOVE_TXT`.
+The first two are required. The third is the Perez-Rosas (COLING 2018) corpus and
+is needed only by `run_cross_dataset.py`; unzip it so that
+`data/raw/fakeNewsDatasets/celebrityDataset/` exists. It is never trained on.
+
+Override any location with `FAKENEWS_WELFAKE_CSV`, `FAKENEWS_GLOVE_TXT` or
+`FAKENEWS_PEREZ_ROSAS_DIR`.
 
 ## 2. Build the preprocessing cache (once, ~30 min)
 
@@ -45,11 +51,26 @@ arrays that three of the other scripts consume.
 | --- | --- | --- |
 | `run_main.py` | Table 1 single-run columns, error counts, saved models | 16.1 min |
 | `run_pos_ablation.py` | Table 3, Figure 1, gain shares | 4.9 min |
-| `run_efficiency.py` | Table 4 | 4.6 min |
+| `run_efficiency.py` | Table 4, hardware and threading record | 4.6 min |
 | `run_svd_sweep.py` | Figure 3, §4.5 | 20.7 min |
 | `run_leakage.py` | Figure 2, §4.4 | 30.7 min |
 | `run_seeds.py` | Table 1 five-seed columns, Table 2 | ~65 min |
-| `run_xgb_tuning.py` | Quantifies the untuned-baseline gap (§3.3, §5.4) | ~60 min |
+| `run_xgb_tuning.py` | Quantifies the untuned-baseline gap (§3.3, §5.4) | 50.8 min |
+| `run_source_holdout.py` | Publisher-held-out generalisation probe | 11.3 min |
+| `run_error_analysis.py` | Error categorisation, `error_sample.md` for manual reading | 1.3 min |
+| `run_cross_dataset.py` | Transfer to the Perez-Rosas corpus, `cross_dataset` figure | 0.6 min |
+
+The last three answer review points rather than producing an original table.
+`run_source_holdout.py` and `run_cross_dataset.py` both test generalisation
+beyond a random split of WELFake, and both report a large drop; read their
+module docstrings before reading their numbers, because each has a design
+caveat that changes what the number means. `run_cross_dataset.py` scores the
+models saved by `run_main.py` and trains nothing.
+
+`run_error_analysis.py` writes `artifacts/results/error_sample.md` for a human
+to read. Record one category per article index in
+`experiments/error_categories.json` and re-run it to fill in the manual table;
+without that file the automated signal tables still populate.
 
 Table 5 compares against published figures and is assembled by hand from the
 cited papers; no script produces it, because no transformer was retrained here.
@@ -66,6 +87,9 @@ python experiments/run_svd_sweep.py
 python experiments/run_leakage.py
 python experiments/run_seeds.py
 python experiments/run_efficiency.py
+python experiments/run_source_holdout.py
+python experiments/run_error_analysis.py
+python experiments/run_cross_dataset.py
 ```
 
 Each writes `artifacts/results/<name>.json` (machine-readable) and
@@ -92,6 +116,31 @@ Two caveats apply to exact bitwise reproduction:
 
 In practice, run-to-run accuracy varies in the fourth decimal place. This is
 exactly why `run_seeds.py` reports mean ± SD rather than a single figure.
+
+## Hardware and threading
+
+`run_efficiency.py` records the machine itself: exact CPU model and rated clock,
+core and thread counts, RAM, OS build, every `*_NUM_THREADS` variable (including
+the unset ones), the loaded BLAS and its thread count, and TensorFlow's op
+parallelism. It lands in `efficiency.json` under `hardware` and `runtime`, so
+nobody has to take the paper's word for what the numbers were measured on.
+
+The reference machine is an 11th Gen Intel Core i7-1165G7 @ 2.80 GHz, 4 cores /
+8 threads, 15.8 GB RAM, no GPU, on Windows 11, with OpenBLAS 0.3.30 (pthreads)
+and no thread variables set.
+
+One thing to be careful about when quoting latency. The default run measures
+articles one at a time but leaves every core available to BLAS, OpenMP and
+TensorFlow, so it is *sequential throughput*, not single-threaded execution. For
+a genuine single-thread figure:
+
+```bash
+python experiments/run_efficiency.py --threads 1 --report-name efficiency_single_thread
+```
+
+That pins BLAS, OpenMP (which is what XGBoost's `n_jobs=-1` actually obeys) and
+TensorFlow to one thread, and records the thread counts that applied while the
+timer ran rather than the ones requested.
 
 ## Package versions
 

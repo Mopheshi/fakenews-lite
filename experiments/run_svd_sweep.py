@@ -8,6 +8,9 @@ alarming out of context.
 
 Only XGBoost is trained -- the TextCNN never sees the SVD block.
 
+Scoring is on the VALIDATION split: the sweep selects a hyperparameter, so the
+test split must play no part in it.
+
     python experiments/run_svd_sweep.py
 """
 
@@ -56,7 +59,6 @@ def main() -> int:
         encoder = TfidfSvdEncoder(tfidf_config, random_state=args.seed)
         X_train = combine_features(encoder.fit_transform(data.train_texts), data.pos_train)
         X_val = combine_features(encoder.transform(data.val_texts), data.pos_val)
-        X_test = combine_features(encoder.transform(data.test_texts), data.pos_test)
         fit_seconds = time.perf_counter() - started
 
         started = time.perf_counter()
@@ -64,40 +66,53 @@ def main() -> int:
         model.fit(X_train, data.y_train, X_val, data.y_val)
         train_seconds = time.perf_counter() - started
 
-        proba = model.predict_proba(X_test)
-        metrics = evaluate(data.y_test, (proba > 0.5).astype(int), proba, model_name=f"XGBoost (k={k})")
+        # Model selection is scored on the VALIDATION split. The test split must
+        # not inform the choice of k, or every downstream number in the paper
+        # becomes test-set-informed model selection.
+        val_proba = model.predict_proba(X_val)
+        val_metrics = evaluate(
+            data.y_val, (val_proba > 0.5).astype(int), val_proba, model_name=f"XGBoost (k={k}, val)"
+        )
 
         records.append(
             {
                 "components": k,
                 "explained_variance": encoder.explained_variance,
-                "accuracy": metrics.accuracy,
-                "f1": metrics.f1,
-                "roc_auc": metrics.roc_auc,
+                "val_accuracy": val_metrics.accuracy,
+                "val_f1": val_metrics.f1,
+                "val_roc_auc": val_metrics.roc_auc,
                 "feature_fit_seconds": round(fit_seconds, 1),
                 "train_seconds": round(train_seconds, 1),
             }
         )
         logger.info(
-            "k=%d: variance %.4f, accuracy %.4f", k, encoder.explained_variance, metrics.accuracy
+            "k=%d: variance %.4f, VALIDATION accuracy %.4f",
+            k,
+            encoder.explained_variance,
+            val_metrics.accuracy,
         )
 
     rows = [
         {
             "Components k": record["components"],
             "Explained variance": record["explained_variance"],
-            "Accuracy": record["accuracy"],
-            "F1 (fake)": record["f1"],
-            "ROC-AUC": record["roc_auc"],
+            "Validation accuracy": record["val_accuracy"],
+            "Validation F1 (fake)": record["val_f1"],
+            "Validation ROC-AUC": record["val_roc_auc"],
             "Feature fit (s)": record["feature_fit_seconds"],
             "XGBoost fit (s)": record["train_seconds"],
         }
         for record in records
     ]
 
+    best = max(records, key=lambda record: record["val_accuracy"])
+    logger.info(
+        "Best k on validation: %d (accuracy %.4f)", best["components"], best["val_accuracy"]
+    )
+
     figure_paths = plot_svd_sweep(
         [record["components"] for record in records],
-        [record["accuracy"] for record in records],
+        [record["val_accuracy"] for record in records],
         [record["explained_variance"] for record in records],
         chosen=base_config.tfidf.svd_components,
     )
@@ -106,7 +121,10 @@ def main() -> int:
         "svd_sweep",
         payload={
             "seed": args.seed,
+            "scored_on": "validation",
             "records": records,
+            "best_components_on_validation": best["components"],
+            "best_validation_accuracy": best["val_accuracy"],
             "chosen_components": base_config.tfidf.svd_components,
             "figures": {kind: str(path) for kind, path in figure_paths.items()},
         },

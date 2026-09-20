@@ -279,7 +279,7 @@ def plot_svd_sweep(
         markeredgewidth=0.8,
         zorder=3,
     )
-    top.set_ylabel("XGBoost accuracy")
+    top.set_ylabel("XGBoost validation accuracy")
 
     bottom.plot(
         components,
@@ -374,6 +374,90 @@ def plot_leakage_deltas(
         loc="lower center",
         bbox_to_anchor=(0.5, 1.02),
         ncols=len(conditions),
+        handletextpad=0.3,
+        columnspacing=1.4,
+        borderaxespad=0.0,
+    )
+
+    fig.tight_layout()
+    return save_figure(fig, stem, directory=directory)
+
+
+def plot_cross_dataset(
+    scores: Mapping[str, Mapping[str, float]],
+    *,
+    stem: str = "cross_dataset",
+    directory: Path | None = None,
+    chance_level: float = 0.5,
+) -> dict[str, Path]:
+    """Accuracy on the training corpus against accuracy on an unseen corpus.
+
+    The one figure in the set whose axis is not zoomed. Everywhere else scores
+    sit between 0.95 and 1.00 and a zoomed axis is the honest choice; here the
+    whole point is the distance from the reference bar, so the axis runs from
+    below chance to 1.0 and a rule marks chance. Compressing that range would
+    flatter the result.
+
+    Args:
+        scores: ``{model_name: {corpus_name: accuracy}}``. Corpus order is taken
+            from the first model's mapping.
+    """
+    use_paper_style()
+
+    model_names = list(scores)
+    if len(model_names) > len(SERIES_COLORS):
+        raise ValueError(
+            f"{len(model_names)} models exceeds the {len(SERIES_COLORS)}-slot validated palette"
+        )
+
+    corpora = list(scores[model_names[0]])
+    values = np.array([[scores[model].get(corpus, np.nan) for corpus in corpora] for model in model_names])
+
+    fig, ax = plt.subplots(figsize=(FULL_WIDTH_IN * 0.62, 2.35))
+    y_positions = np.arange(len(corpora))[::-1]
+
+    ax.set_axisbelow(True)
+    ax.grid(axis="x", which="major")
+    ax.grid(False, axis="y")
+
+    ax.axvline(chance_level, color=INK_MUTED, linewidth=0.9, linestyle=(0, (4, 3)), zorder=1)
+    # Blended transform: the label tracks the rule horizontally but sits at a
+    # fixed height. The top of the axes is the safe place for it -- the row
+    # nearest chance is the worst transfer case and its markers sit low.
+    ax.text(
+        chance_level,
+        0.97,
+        " chance",
+        transform=mpl.transforms.blended_transform_factory(ax.transData, ax.transAxes),
+        fontsize=6.5,
+        color=INK_MUTED,
+        va="top",
+        ha="left",
+    )
+
+    for index, model in enumerate(model_names):
+        ax.scatter(
+            values[index],
+            y_positions,
+            s=42,
+            marker=SERIES_MARKERS[index],
+            color=SERIES_COLORS[index],
+            edgecolors="white",
+            linewidths=0.8,
+            label=model,
+            zorder=3,
+        )
+
+    lowest = float(np.nanmin(values))
+    ax.set_xlim(min(lowest - 0.05, chance_level - 0.08), 1.0)
+    ax.set_yticks(y_positions, corpora)
+    ax.set_xlabel("Accuracy at the deployed 0.5 threshold")
+    ax.tick_params(axis="y", length=0, labelcolor=INK_SECONDARY)
+    ax.spines["left"].set_visible(False)
+    ax.legend(
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1.02),
+        ncols=len(model_names),
         handletextpad=0.3,
         columnspacing=1.4,
         borderaxespad=0.0,

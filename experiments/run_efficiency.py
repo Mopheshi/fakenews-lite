@@ -16,10 +16,10 @@ speed-up ratio without a measured baseline would be inventing a number.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import gc
 import json
 import logging
-import platform
 import statistics
 import time
 from pathlib import Path
@@ -30,6 +30,12 @@ from _report import configure_logging, load_result, markdown_table, write_report
 from fakenews.config import DEFAULT_SEED, MODELS_DIR, ExperimentConfig
 from fakenews.data.loader import load_welfake
 from fakenews.detector import FakeNewsDetector
+from fakenews.environment import (
+    as_rows,
+    describe_blas,
+    describe_environment,
+    summarise_hardware,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -42,32 +48,43 @@ REFERENCE_MODELS = {
 }
 
 
-def _hardware_profile() -> dict:
-    profile = {
-        "platform": platform.platform(),
-        "processor": platform.processor() or platform.machine(),
-        "python": platform.python_version(),
-    }
-    try:
-        import psutil
+def _limit_tensorflow_threads(threads: int) -> dict | None:
+    """Pin TensorFlow's op parallelism, if it is not too late to.
 
-        profile["physical_cores"] = psutil.cpu_count(logical=False)
-        profile["logical_cores"] = psutil.cpu_count(logical=True)
-        profile["total_ram_gb"] = round(psutil.virtual_memory().total / 1024**3, 1)
-    except ImportError:
-        import os
-
-        profile["logical_cores"] = os.cpu_count()
-        logger.warning("psutil not installed; RAM and physical core count unavailable")
-
+    TensorFlow fixes its thread pools the first time it runs an op, so this has
+    to happen before the detector is loaded. It returns what was actually
+    applied rather than what was asked for, because a refusal here would
+    otherwise be invisible in a report whose whole purpose is to say how the
+    measurement was configured.
+    """
     try:
         import tensorflow as tf
 
-        profile["gpus_visible"] = len(tf.config.list_physical_devices("GPU"))
-    except Exception:
-        profile["gpus_visible"] = None
+        tf.config.threading.set_intra_op_parallelism_threads(threads)
+        tf.config.threading.set_inter_op_parallelism_threads(threads)
+    except RuntimeError:
+        logger.warning("TensorFlow was already initialised; its thread pools were not changed")
+        return None
+    except ImportError:
+        return None
 
-    return profile
+    return {"intra_op": threads, "inter_op": threads}
+
+
+def _thread_limit_context(threads: int):
+    """Constrain BLAS and OpenMP for the duration of the benchmark.
+
+    OpenMP is the one that matters for XGBoost: the saved model carries
+    ``n_jobs=-1``, so without this it predicts on every core no matter what the
+    report claims.
+    """
+    try:
+        from threadpoolctl import threadpool_limits
+
+        return threadpool_limits(limits=threads)
+    except ImportError:
+        logger.warning("threadpoolctl not installed; BLAS and OpenMP threads were not limited")
+        return contextlib.nullcontext()
 
 
 def _peak_rss_mb() -> float | None:
@@ -96,9 +113,31 @@ def main() -> int:
     parser.add_argument("--model-dir", type=Path, default=None)
     parser.add_argument("--n-latency-samples", type=int, default=1_000)
     parser.add_argument("--warmup", type=int, default=25)
+    parser.add_argument(
+        "--threads",
+        type=int,
+        default=0,
+        help=(
+            "Limit BLAS, OpenMP and TensorFlow to this many threads for the latency "
+            "benchmark. 0 (the default) leaves the machine unconstrained, which is "
+            "what the headline figure is measured under. Pass 1 for a genuine "
+            "single-thread figure."
+        ),
+    )
+    parser.add_argument(
+        "--report-name",
+        default="efficiency",
+        help=(
+            "Stem for the written report. Use a different one when measuring a "
+            "second thread configuration so the two do not overwrite each other."
+        ),
+    )
     args = parser.parse_args()
 
     configure_logging()
+
+    # Before the detector is loaded: TensorFlow will not resize its pools later.
+    tensorflow_limit = _limit_tensorflow_threads(args.threads) if args.threads > 0 else None
     config = ExperimentConfig(seed=args.seed)
     model_dir = args.model_dir or MODELS_DIR / f"seed{args.seed}"
 
@@ -107,8 +146,9 @@ def main() -> int:
             f"No saved models at {model_dir}. Run `python experiments/run_main.py` first."
         )
 
-    hardware = _hardware_profile()
-    logger.info("Hardware: %s", hardware)
+    environment = describe_environment()
+    hardware = environment["hardware"]
+    logger.info("Hardware: %s", summarise_hardware(hardware))
 
     # --------------------------------------------------------- parameter counts
     main_results = load_result("main_results")
@@ -192,19 +232,36 @@ def main() -> int:
     ]
     mean_chars = float(np.mean([len(title) + len(text) for title, text in samples]))
 
-    logger.info("Warming up (%d articles)", args.warmup)
-    for title, text in samples[: args.warmup]:
-        detector.predict_article(title, text)
+    limit = _thread_limit_context(args.threads) if args.threads > 0 else contextlib.nullcontext()
 
-    gc.collect()
-    logger.info("Timing %d single-article predictions", len(samples))
-    latencies_ms = []
-    wall_started = time.perf_counter()
-    for title, text in samples:
-        started = time.perf_counter()
-        detector.predict_article(title, text)
-        latencies_ms.append((time.perf_counter() - started) * 1000.0)
-    wall_seconds = time.perf_counter() - wall_started
+    with limit:
+        logger.info("Warming up (%d articles)", args.warmup)
+        for title, text in samples[: args.warmup]:
+            detector.predict_article(title, text)
+
+        gc.collect()
+        logger.info(
+            "Timing %d single-article predictions (%s)",
+            len(samples),
+            f"{args.threads} thread(s)" if args.threads > 0 else "unconstrained threads",
+        )
+        latencies_ms = []
+        wall_started = time.perf_counter()
+        for title, text in samples:
+            started = time.perf_counter()
+            detector.predict_article(title, text)
+            latencies_ms.append((time.perf_counter() - started) * 1000.0)
+        wall_seconds = time.perf_counter() - wall_started
+
+        # Read inside the context: this is the configuration the numbers above
+        # were produced under, which is the only one worth recording.
+        blas_during_benchmark = describe_blas()
+
+    thread_configuration = {
+        "requested_threads": args.threads or "unconstrained",
+        "tensorflow_limit_applied": tensorflow_limit,
+        "blas_during_benchmark": blas_during_benchmark,
+    }
 
     latencies_ms.sort()
     latency = {
@@ -256,12 +313,33 @@ def main() -> int:
     storage_rows = [{"File": name, "Size (MB)": size} for name, size in disk_sizes.items()]
     storage_rows.append({"File": "Total", "Size (MB)": total_disk_mb})
 
-    hardware_rows = [{"Property": key, "Value": str(value)} for key, value in hardware.items()]
+    hardware_rows = as_rows(hardware)
+    # The BLAS list is wide and, read before the benchmark, reports the thread
+    # counts the benchmark may not have run under. The table below reports the
+    # configuration that actually applied; the full list stays in the JSON.
+    runtime_rows = as_rows(
+        {key: value for key, value in environment["runtime"].items() if key != "blas"}
+    )
+    thread_rows = [
+        {"Property": "Latency benchmark threads", "Value": str(thread_configuration["requested_threads"])},
+        {
+            "Property": "TensorFlow intra/inter op",
+            "Value": str(tensorflow_limit or "TensorFlow default (one thread per logical core)"),
+        },
+    ] + [
+        {
+            "Property": f"{entry.get('internal_api', 'library')} ({entry.get('prefix', '?')})",
+            "Value": f"{entry.get('num_threads')} threads, version {entry.get('version')}",
+        }
+        for entry in (blas_during_benchmark or [])
+    ]
 
     write_report(
-        "efficiency",
+        args.report_name,
         payload={
             "hardware": hardware,
+            "runtime": environment["runtime"],
+            "latency_thread_configuration": thread_configuration,
             "parameter_counts": parameter_counts,
             "learned_parameter_total": learned_total,
             "full_footprint_total": full_total,
@@ -275,11 +353,17 @@ def main() -> int:
             "caveat": (
                 "Transformer parameter counts are quoted from their publications. No "
                 "transformer was trained or benchmarked on this hardware, so no "
-                "training-time or latency ratio against one is reported."
+                "training-time or latency ratio against one is reported. Latency is "
+                "measured one article at a time; unless --threads was passed, the "
+                "process still had every core available to BLAS, OpenMP and "
+                "TensorFlow, so it is sequential throughput rather than "
+                "single-threaded execution."
             ),
         },
         tables=[
             ("Hardware", markdown_table(hardware_rows)),
+            ("Software and threading", markdown_table(runtime_rows)),
+            ("Thread configuration during the latency benchmark", markdown_table(thread_rows)),
             ("Parameter accounting", markdown_table(parameter_rows)),
             ("Published transformer sizes (citations, not measurements)", markdown_table(comparison_rows)),
             ("Training wall-clock", markdown_table(training_rows)),

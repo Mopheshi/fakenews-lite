@@ -188,3 +188,128 @@ def class_conditional_effect(values: np.ndarray, labels: np.ndarray, *, feature:
         t_statistic=float(t_statistic),
         p_value=float(p_value),
     )
+
+
+@dataclass
+class ProportionComparison:
+    """Unpaired comparison of one rate measured on two independent samples."""
+
+    label_a: str
+    label_b: str
+    count_a: int
+    total_a: int
+    count_b: int
+    total_b: int
+    difference: float
+    ci_lower: float
+    ci_upper: float
+    p_value: float
+
+    @property
+    def rate_a(self) -> float:
+        return self.count_a / self.total_a if self.total_a else 0.0
+
+    @property
+    def rate_b(self) -> float:
+        return self.count_b / self.total_b if self.total_b else 0.0
+
+    def to_dict(self) -> dict:
+        return {
+            "label_a": self.label_a,
+            "label_b": self.label_b,
+            "count_a": self.count_a,
+            "total_a": self.total_a,
+            "rate_a": self.rate_a,
+            "count_b": self.count_b,
+            "total_b": self.total_b,
+            "rate_b": self.rate_b,
+            "difference": self.difference,
+            "ci_lower": self.ci_lower,
+            "ci_upper": self.ci_upper,
+            "p_value": self.p_value,
+            "test": "two-sided Fisher exact, Newcombe interval on the difference",
+        }
+
+
+def two_proportion_test(
+    count_a: int,
+    total_a: int,
+    count_b: int,
+    total_b: int,
+    *,
+    label_a: str = "A",
+    label_b: str = "B",
+    confidence: float = 0.95,
+) -> ProportionComparison:
+    """Compare a rate across two *independent* samples.
+
+    McNemar does not apply here: the publisher-holdout probe measures the same
+    model's false positive rate on two disjoint sets of articles, so there are no
+    matched pairs. The interval is Newcombe's hybrid score method, which stays
+    well behaved when a rate approaches zero -- the normal approximation does
+    not, and these rates are a few percent.
+
+    Returns:
+        A :class:`ProportionComparison` for ``A - B``.
+    """
+    if total_a <= 0 or total_b <= 0:
+        raise ValueError("Both samples must be non-empty")
+
+    table = [[count_a, total_a - count_a], [count_b, total_b - count_b]]
+    p_value = float(stats.fisher_exact(table, alternative="two-sided")[1])
+
+    z = float(stats.norm.ppf(1.0 - (1.0 - confidence) / 2.0))
+    lower_a, upper_a = _wilson_interval(count_a, total_a, z)
+    lower_b, upper_b = _wilson_interval(count_b, total_b, z)
+
+    rate_a, rate_b = count_a / total_a, count_b / total_b
+    difference = rate_a - rate_b
+
+    # Newcombe: propagate each Wilson bound into the bound of the difference
+    # that it can actually move.
+    ci_lower = difference - np.sqrt((rate_a - lower_a) ** 2 + (upper_b - rate_b) ** 2)
+    ci_upper = difference + np.sqrt((upper_a - rate_a) ** 2 + (rate_b - lower_b) ** 2)
+
+    return ProportionComparison(
+        label_a=label_a,
+        label_b=label_b,
+        count_a=count_a,
+        total_a=total_a,
+        count_b=count_b,
+        total_b=total_b,
+        difference=difference,
+        ci_lower=float(ci_lower),
+        ci_upper=float(ci_upper),
+        p_value=p_value,
+    )
+
+
+def proportion_interval(
+    count: int,
+    total: int,
+    *,
+    confidence: float = 0.95,
+) -> tuple[float, float]:
+    """Wilson score interval for a single rate.
+
+    Used where a number is a count over a denominator -- accuracy on a small
+    corpus, a false positive rate -- and the normal approximation would run off
+    the end of [0, 1].
+
+    Returns:
+        ``(lower, upper)``.
+    """
+    if total <= 0:
+        raise ValueError("Sample must be non-empty")
+
+    z = float(stats.norm.ppf(1.0 - (1.0 - confidence) / 2.0))
+    return _wilson_interval(count, total, z)
+
+
+def _wilson_interval(count: int, total: int, z: float) -> tuple[float, float]:
+    """Wilson score interval for a single proportion."""
+    rate = count / total
+    denominator = 1.0 + z**2 / total
+    centre = (rate + z**2 / (2 * total)) / denominator
+    margin = z * np.sqrt(rate * (1 - rate) / total + z**2 / (4 * total**2)) / denominator
+    return float(max(0.0, centre - margin)), float(min(1.0, centre + margin))

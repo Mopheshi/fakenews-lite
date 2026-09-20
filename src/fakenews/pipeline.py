@@ -115,13 +115,20 @@ class PipelineResult:
         return path
 
 
-def make_splits(
-    texts: np.ndarray,
+def split_indices(
     labels: np.ndarray,
-    pos_features: np.ndarray | None,
     config: ExperimentConfig,
-) -> SplitData:
-    """Stratified 70/10/20 partition, reproducible from ``config.seed``."""
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Row indices of the stratified 70/10/20 partition.
+
+    Exposed separately from :func:`make_splits` so an analysis can join saved
+    predictions back to the articles that produced them. Recomputing the split
+    by hand elsewhere would be one edit away from silently disagreeing with the
+    split the models were actually trained on.
+
+    Returns:
+        ``(train_idx, val_idx, test_idx)``.
+    """
     split = config.split
     indices = np.arange(len(labels))
 
@@ -137,6 +144,17 @@ def make_splits(
         random_state=config.seed,
         stratify=labels[train_idx] if split.stratify else None,
     )
+    return train_idx, val_idx, test_idx
+
+
+def make_splits(
+    texts: np.ndarray,
+    labels: np.ndarray,
+    pos_features: np.ndarray | None,
+    config: ExperimentConfig,
+) -> SplitData:
+    """Stratified 70/10/20 partition, reproducible from ``config.seed``."""
+    train_idx, val_idx, test_idx = split_indices(labels, config)
 
     def take_pos(index: np.ndarray) -> np.ndarray | None:
         return pos_features[index] if pos_features is not None else None
@@ -158,12 +176,19 @@ def run_pipeline(
     config: ExperimentConfig | None = None,
     *,
     blocklist_preset: str = "none",
+    splits: SplitData | None = None,
     save_models_to: Path | str | None = None,
     run_name: str | None = None,
     save_results: bool = True,
     verbose: int = 1,
 ) -> PipelineResult:
-    """Train XGBoost, TextCNN and the three ensembles, then evaluate on the test split."""
+    """Train XGBoost, TextCNN and the three ensembles, then evaluate on the test split.
+
+    Args:
+        splits: A pre-built partition. Supplying one bypasses the stratified
+            random split, which is what the publisher-holdout probe needs: its
+            test set is defined by article provenance rather than by sampling.
+    """
     config = config or ExperimentConfig()
     ensure_directories()
     set_global_seed(config.seed)
@@ -172,9 +197,14 @@ def run_pipeline(
         "Run: seed=%d pos=%s blocklist=%s", config.seed, config.use_pos_features, blocklist_preset
     )
 
-    texts, labels, pos_frame = load_cached_corpus(blocklist_preset=blocklist_preset)
-    pos_features = pos_frame[list(POS_FEATURE_COLUMNS)].to_numpy() if config.use_pos_features else None
-    data = make_splits(texts.to_numpy(), labels, pos_features, config)
+    if splits is not None:
+        data = splits
+    else:
+        texts, labels, pos_frame = load_cached_corpus(blocklist_preset=blocklist_preset)
+        pos_features = (
+            pos_frame[list(POS_FEATURE_COLUMNS)].to_numpy() if config.use_pos_features else None
+        )
+        data = make_splits(texts.to_numpy(), labels, pos_features, config)
     logger.info("Split sizes: %s", data.sizes)
 
     timings: dict[str, float] = {}
@@ -195,7 +225,7 @@ def run_pipeline(
     feature_info["svd_components"] = tfidf.n_components
     feature_info["svd_explained_variance"] = tfidf.explained_variance
     feature_info["xgb_feature_dim"] = int(X_train_xgb.shape[1])
-    feature_info["n_pos_features"] = 0 if pos_features is None else len(POS_FEATURE_COLUMNS)
+    feature_info["n_pos_features"] = 0 if data.pos_train is None else len(POS_FEATURE_COLUMNS)
 
     started = time.perf_counter()
     xgb_model = XGBoostModel(config.xgboost, random_state=config.seed)

@@ -37,10 +37,23 @@ STEPS: dict[str, tuple[str, str]] = {
     "leakage": ("run_leakage.py", "source_leakage.json"),
     "seeds": ("run_seeds.py", "seed_stability.json"),
     "xgb_tuning": ("run_xgb_tuning.py", "xgboost_tuning.json"),
+    "source_holdout": ("run_source_holdout.py", "source_holdout.json"),
+    "error_analysis": ("run_error_analysis.py", "error_analysis.json"),
+    "cross_dataset": ("run_cross_dataset.py", "cross_dataset.json"),
 }
 
-#: Hyperparameter tuning is informative but slow, so it is opt-in.
-DEFAULT_STEPS = ("main", "pos_ablation", "efficiency", "svd_sweep", "leakage", "seeds")
+#: Tuning is slow, and the cross-dataset probe needs a corpus that is not part
+#: of the standard setup, so both are opt-in.
+DEFAULT_STEPS = (
+    "main",
+    "pos_ablation",
+    "efficiency",
+    "svd_sweep",
+    "leakage",
+    "seeds",
+    "source_holdout",
+    "error_analysis",
+)
 
 
 def main() -> int:

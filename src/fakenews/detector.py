@@ -10,13 +10,18 @@ from __future__ import annotations
 import json
 import logging
 import pickle
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 
 from fakenews.data.preprocessing import BLOCKLIST_PRESETS, TextPreprocessor
-from fakenews.features.pos import POS_CATEGORIES, extract_pos_features
+from fakenews.features.pos import (
+    POS_CATEGORIES,
+    extract_pos_features,
+    extract_pos_features_batch,
+)
 from fakenews.models.ensemble import EnsembleModel
 from fakenews.models.text_cnn import TextCNNModel
 from fakenews.models.xgboost_model import XGBoostModel
@@ -92,6 +97,10 @@ class FakeNewsDetector:
         )
 
     # --------------------------------------------------------------- features
+    def _clean(self, title: object, text: object) -> str:
+        """Title and body, cleaned and joined exactly as training joined them."""
+        return f"{self.preprocessor.preprocess(title)} {self.preprocessor.preprocess(text)}".strip()
+
     def _xgboost_features(self, cleaned: str, original: str) -> np.ndarray:
         X = self.tfidf_encoder.transform([cleaned])
         if self.use_pos_features:
@@ -102,6 +111,61 @@ class FakeNewsDetector:
     def _textcnn_features(self, cleaned: str) -> np.ndarray:
         return self.sequence_encoder.transform([cleaned])
 
+    # -------------------------------------------------------- batch inference
+    def predict_proba_many(
+        self,
+        titles: Sequence[object],
+        texts: Sequence[object],
+        *,
+        pos_n_jobs: int = -1,
+    ) -> dict[str, np.ndarray]:
+        """Fake-class probability for a corpus, one array per model held.
+
+        Deliberately not the implementation behind :meth:`predict_article`.
+        That method is the measured single-article latency path, and routing it
+        through the parallel POS tagger would add process startup to a figure
+        the paper reports. The two share cleaning and nothing else.
+
+        Args:
+            titles: Raw headlines, aligned with ``texts``.
+            texts: Raw bodies.
+            pos_n_jobs: Workers for POS tagging; ``1`` runs inline.
+
+        Returns:
+            Arrays keyed as the pipeline keys them (``xgboost``, ``textcnn``,
+            ``ensemble_soft_voting``), so a cross-dataset result can be read
+            against a training-corpus result without renaming anything.
+        """
+        if len(titles) != len(texts):
+            raise ValueError(f"Got {len(titles)} titles and {len(texts)} texts")
+
+        cleaned = [self._clean(title, text) for title, text in zip(titles, texts, strict=True)]
+        originals = [f"{title} {text}" for title, text in zip(titles, texts, strict=True)]
+
+        probabilities: dict[str, np.ndarray] = {}
+        feature_matrices = []
+        models = []
+
+        if self.xgboost_model is not None:
+            X = self.tfidf_encoder.transform(cleaned)
+            if self.use_pos_features:
+                X = np.hstack([X, extract_pos_features_batch(originals, n_jobs=pos_n_jobs)])
+            feature_matrices.append(X)
+            models.append(self.xgboost_model)
+            probabilities["xgboost"] = np.asarray(self.xgboost_model.predict_proba(X))
+
+        if self.textcnn_model is not None:
+            X = self.sequence_encoder.transform(cleaned)
+            feature_matrices.append(X)
+            models.append(self.textcnn_model)
+            probabilities["textcnn"] = np.asarray(self.textcnn_model.predict_proba(X))
+
+        if self.ensemble_model is not None and len(models) > 1:
+            key = f"ensemble_{self.ensemble_model.method}"
+            probabilities[key] = np.asarray(self.ensemble_model.predict_proba(feature_matrices))
+
+        return probabilities
+
     # -------------------------------------------------------------- inference
     def predict_article(self, title: str, text: str, *, verbose: bool = False) -> dict:
         """Classify one article.
@@ -110,7 +174,7 @@ class FakeNewsDetector:
             A dict with ``prediction`` (``"FAKE"``/``"LEGIT"``), ``confidence``
             (probability of the predicted class) and both class probabilities.
         """
-        cleaned = f"{self.preprocessor.preprocess(title)} {self.preprocessor.preprocess(text)}".strip()
+        cleaned = self._clean(title, text)
         original = f"{title} {text}"
 
         per_model: dict[str, dict[str, float]] = {}

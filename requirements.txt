@@ -26,3 +26,5 @@ psutil>=5.9
 # Development
 pytest>=8.0
 ruff>=0.6
+
+aiohttp

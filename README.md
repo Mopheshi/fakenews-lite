@@ -133,6 +133,9 @@ See [`docs/reproducing.md`](docs/reproducing.md). In dependency order:
 | `run_efficiency.py` | What does "lightweight" cost, measured on named hardware? |
 | `run_svd_sweep.py` | Why 300 SVD components? |
 | `run_xgb_tuning.py` | How much does the untuned baseline give away? |
+| `run_source_holdout.py` | Does it still work on a publisher held out of training? |
+| `run_error_analysis.py` | What do the mistakes actually look like? |
+| `run_cross_dataset.py` | Does it transfer to a corpus collected by other people? |
 
 Each writes `artifacts/results/<name>.json` and a Markdown table beside it;
 figures go to `artifacts/figures/` as 300-DPI PNG and vector PDF.

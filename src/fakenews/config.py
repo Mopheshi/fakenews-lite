@@ -38,6 +38,12 @@ FIGURES_DIR = ARTIFACTS_DIR / "figures"
 WELFAKE_CSV = _path_from_env("FAKENEWS_WELFAKE_CSV", RAW_DATA_DIR / "WELFake_Dataset.csv")
 GLOVE_TXT = _path_from_env("FAKENEWS_GLOVE_TXT", EMBEDDINGS_DIR / "glove.6B.100d.txt")
 
+#: Root of the unzipped Perez-Rosas (COLING 2018) release, used for the
+#: cross-dataset probe only. Never trained on.
+PEREZ_ROSAS_DIR = _path_from_env(
+    "FAKENEWS_PEREZ_ROSAS_DIR", RAW_DATA_DIR / "fakeNewsDatasets"
+)
+
 
 def ensure_directories() -> None:
     """Create every writable directory the pipeline needs."""
