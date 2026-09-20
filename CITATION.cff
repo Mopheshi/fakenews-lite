@@ -31,10 +31,6 @@ authors:
     family-names: Garga
     affiliation: Istanbul Okan University
     email: yusufgarga@gmail.com
-  - given-names: Nyibong
-    family-names: George
-    affiliation: Istanbul Okan University
-    email: nyibonggeorge01@gmail.com
 license: MIT
 version: 1.0.0
 repository-code: "https://github.com/Mopheshi/fakenews-lite"
@@ -47,7 +43,6 @@ keywords:
   - TextCNN
   - CPU Inference
   - Computational Eﬀiciency
-Inference, Computational Eﬀiciency.
 abstract: >-
   Most recent work on fake news detection reaches for transformer models, which perform well but need a GPU
   and a good deal of time to train. This paper asks a simpler question: how much accuracy is lost when those
