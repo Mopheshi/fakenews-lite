@@ -1,0 +1,33 @@
+﻿python.exe : 15:24:57 INFO    fakenews.nltk_resources | Downloading NLTK resource 
+wordnet
+At line:1 char:420
++ ... jects\MSc"; & $py -m fakenews.cli build-cache --jobs 7 --overwrite 2> ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (15:24:57 INFO  ...esource wordnet:Str 
+   ing) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+15:24:57 INFO    fakenews.nltk_resources | Downloading NLTK resource omw-1.4
+15:25:01 INFO    fakenews.data.loader | Loaded 72134 articles from 
+C:\Users\ndach\PycharmProjects\MSc\data\raw\WELFake_Dataset.csv
+15:25:01 INFO    fakenews.data.loader | Label distribution: 35028 legit (0), 37106 
+fake (1)
+15:25:01 INFO    fakenews.data.loader | Missing values: 558 titles, 39 texts 
+(filled with empty strings)
+15:25:01 INFO    fakenews.data.cache | Extracting POS features for 72134 documents
+15:25:01 INFO    fakenews.features.pos | Tagging 72134 documents in 145 chunks 
+(n_jobs=7)
+[Parallel(n_jobs=7)]: Using backend LokyBackend with 7 concurrent workers.
+[Parallel(n_jobs=7)]: Done   4 tasks      | elapsed:   39.1s
+[Parallel(n_jobs=7)]: Done  58 tasks      | elapsed:  6.0min
+[Parallel(n_jobs=7)]: Done 145 out of 145 | elapsed: 14.2min finished
+15:39:15 INFO    fakenews.data.cache | POS extraction finished in 854.1 s
+15:39:15 INFO    fakenews.data.cache | Cleaning text variant 'none'
+15:45:40 INFO    fakenews.data.cache | Cleaning text variant 'wire'
+15:50:00 INFO    fakenews.data.cache | Cleaning text variant 'extended'
+15:54:06 INFO    fakenews.data.cache | Dropping 9 documents that clean to an empty 
+string
+15:54:20 INFO    fakenews.data.cache | Cache written to 
+C:\Users\ndach\PycharmProjects\MSc\data\cache\welfake_preprocessed.parquet (72125 
+rows, 9 dropped) in 1763.4 s
+Preprocessing cache: C:\Users\ndach\PycharmProjects\MSc\data\cache\welfake_preprocessed.parquet

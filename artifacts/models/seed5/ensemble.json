@@ -1,0 +1,7 @@
+{
+  "method": "soft_voting",
+  "model_names": [
+    "XGBoost",
+    "TextCNN"
+  ]
+}

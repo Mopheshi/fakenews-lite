@@ -1,0 +1,26 @@
+2026-09-20 23:22:35.955331: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-09-20 23:22:39.813479: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+23:22:42 INFO    __main__ | Hardware: 11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz, 4 cores / 8 threads, 15.8 GB RAM, no GPU
+23:22:42 INFO    __main__ | Loading detector from C:\Users\ndach\PycharmProjects\MSc\artifacts\models\seed5
+2026-09-20 23:22:42.981164: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+23:22:46 INFO    fakenews.data.loader | Loaded 72134 articles from C:\Users\ndach\PycharmProjects\MSc\data\raw\WELFake_Dataset.csv
+23:22:46 INFO    fakenews.data.loader | Label distribution: 35028 legit (0), 37106 fake (1)
+23:22:46 INFO    fakenews.data.loader | Missing values: 558 titles, 39 texts (filled with empty strings)
+23:22:46 INFO    __main__ | Warming up (25 articles)
+23:23:06 INFO    __main__ | Timing 1000 single-article predictions (unconstrained threads)
+23:29:11 INFO    _report | Wrote efficiency.json and efficiency.md
+
+{
+  "latency": {
+    "n_samples": 1000,
+    "mean_ms": 364.79,
+    "median_ms": 261.32,
+    "p95_ms": 717.66,
+    "p99_ms": 855.29,
+    "max_ms": 3220.43,
+    "mean_article_chars": 3255.0,
+    "throughput_articles_per_second": 2.7
+  },
+  "peak_rss_mb": 1214.0
+}

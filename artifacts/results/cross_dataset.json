@@ -1,0 +1,1573 @@
+{
+  "model_directory": "C:\\Users\\ndach\\PycharmProjects\\MSc\\artifacts\\models\\seed5",
+  "corpus": {
+    "name": "Perez-Rosas",
+    "description": "980 articles across seven domains: 480 FakeNewsAMT (crowdsourced fabrications paired with mainstream originals) and 500 Celebrity (tabloid and gossip reporting verified against GossipCop).",
+    "source_url": "https://web.eecs.umich.edu/~mihalcea/downloads/fakeNewsDatasets.zip",
+    "citation": "Perez-Rosas et al. (2018), COLING",
+    "n_articles": 980,
+    "class_balance": {
+      "0": 490,
+      "1": 490
+    },
+    "mean_words": 276.12448979591835
+  },
+  "design": "The saved seed-5 model is scored unchanged on the Perez-Rosas corpus. No retraining, no threshold fitting, no vocabulary refresh. The oracle threshold is an upper bound on recalibration and is not an operating point.",
+  "reference_welfake_test": {
+    "xgboost": {
+      "model": "XGBoost",
+      "n_samples": 14425,
+      "accuracy": 0.9575043327556326,
+      "precision_fake": 0.9495376486129459,
+      "recall_fake": 0.9688637282652649,
+      "f1_fake": 0.9591033424511308,
+      "macro_f1": 0.9574392695229466,
+      "roc_auc": 0.9924927152152757,
+      "false_positive_rate": 0.0545246931201827,
+      "false_positives": 382,
+      "false_negatives": 231,
+      "confusion": [
+        [
+          6624,
+          382
+        ],
+        [
+          231,
+          7188
+        ]
+      ],
+      "per_class": {
+        "Legit": {
+          "precision": 0.9663019693654267,
+          "recall": 0.9454753068798173,
+          "f1": 0.9557751965947623,
+          "support": 7006
+        },
+        "Fake": {
+          "precision": 0.9495376486129459,
+          "recall": 0.9688637282652649,
+          "f1": 0.9591033424511308,
+          "support": 7419
+        }
+      }
+    },
+    "textcnn": {
+      "model": "TextCNN",
+      "n_samples": 14425,
+      "accuracy": 0.9775389948006933,
+      "precision_fake": 0.9714285714285714,
+      "recall_fake": 0.9853079929909692,
+      "f1_fake": 0.9783190578158458,
+      "macro_f1": 0.9775098812738081,
+      "roc_auc": 0.9971443805488658,
+      "false_positive_rate": 0.03068798172994576,
+      "false_positives": 215,
+      "false_negatives": 109,
+      "confusion": [
+        [
+          6791,
+          215
+        ],
+        [
+          109,
+          7310
+        ]
+      ],
+      "per_class": {
+        "Legit": {
+          "precision": 0.9842028985507246,
+          "recall": 0.9693120182700542,
+          "f1": 0.9767007047317705,
+          "support": 7006
+        },
+        "Fake": {
+          "precision": 0.9714285714285714,
+          "recall": 0.9853079929909692,
+          "f1": 0.9783190578158458,
+          "support": 7419
+        }
+      }
+    },
+    "ensemble_soft_voting": {
+      "model": "Ensemble (soft voting)",
+      "n_samples": 14425,
+      "accuracy": 0.9796880415944541,
+      "precision_fake": 0.9734254584108424,
+      "recall_fake": 0.9874646178730287,
+      "f1_fake": 0.9803947808631649,
+      "macro_f1": 0.9796616119346389,
+      "roc_auc": 0.9975158873508264,
+      "false_positive_rate": 0.028546959748786755,
+      "false_positives": 200,
+      "false_negatives": 93,
+      "confusion": [
+        [
+          6806,
+          200
+        ],
+        [
+          93,
+          7326
+        ]
+      ],
+      "per_class": {
+        "Legit": {
+          "precision": 0.9865197854761559,
+          "recall": 0.9714530402512133,
+          "f1": 0.9789284430061129,
+          "support": 7006
+        },
+        "Fake": {
+          "precision": 0.9734254584108424,
+          "recall": 0.9874646178730287,
+          "f1": 0.9803947808631649,
+          "support": 7419
+        }
+      }
+    }
+  },
+  "results": {
+    "xgboost": {
+      "All Perez-Rosas": {
+        "group": "All Perez-Rosas",
+        "n": 980,
+        "n_fake": 490,
+        "metrics": {
+          "model": "XGBoost (All Perez-Rosas)",
+          "n_samples": 980,
+          "accuracy": 0.6010204081632653,
+          "precision_fake": 0.5642023346303502,
+          "recall_fake": 0.8877551020408163,
+          "f1_fake": 0.689928628072958,
+          "macro_f1": 0.5652790493726736,
+          "roc_auc": 0.6692294877134528,
+          "false_positive_rate": 0.6857142857142857,
+          "false_positives": 336,
+          "false_negatives": 55,
+          "confusion": [
+            [
+              154,
+              336
+            ],
+            [
+              55,
+              435
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.7368421052631579,
+              "recall": 0.3142857142857143,
+              "f1": 0.4406294706723891,
+              "support": 490
+            },
+            "Fake": {
+              "precision": 0.5642023346303502,
+              "recall": 0.8877551020408163,
+              "f1": 0.689928628072958,
+              "support": 490
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.5700245501207165,
+          0.6312273876023976
+        ],
+        "mean_fake_probability": 0.7439021468162537,
+        "mean_fake_probability_by_class": {
+          "legit": 0.6558789014816284,
+          "fake": 0.8319254517555237
+        },
+        "oracle_threshold": 0.9134214520454407,
+        "oracle_accuracy": 0.6234693877551021
+      },
+      "Celebrity": {
+        "group": "Celebrity",
+        "n": 500,
+        "n_fake": 250,
+        "metrics": {
+          "model": "XGBoost (Celebrity)",
+          "n_samples": 500,
+          "accuracy": 0.608,
+          "precision_fake": 0.5645933014354066,
+          "recall_fake": 0.944,
+          "f1_fake": 0.7065868263473054,
+          "macro_f1": 0.5581126902820864,
+          "roc_auc": 0.6935040000000001,
+          "false_positive_rate": 0.728,
+          "false_positives": 182,
+          "false_negatives": 14,
+          "confusion": [
+            [
+              68,
+              182
+            ],
+            [
+              14,
+              236
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.8292682926829268,
+              "recall": 0.272,
+              "f1": 0.40963855421686746,
+              "support": 250
+            },
+            "Fake": {
+              "precision": 0.5645933014354066,
+              "recall": 0.944,
+              "f1": 0.7065868263473054,
+              "support": 250
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.5645405202499838,
+          0.6498126222103209
+        ],
+        "mean_fake_probability": 0.8006008267402649,
+        "mean_fake_probability_by_class": {
+          "legit": 0.7040263414382935,
+          "fake": 0.8971753120422363
+        },
+        "oracle_threshold": 0.9606878161430359,
+        "oracle_accuracy": 0.65
+      },
+      "FakeNewsAMT": {
+        "group": "FakeNewsAMT",
+        "n": 480,
+        "n_fake": 240,
+        "metrics": {
+          "model": "XGBoost (FakeNewsAMT)",
+          "n_samples": 480,
+          "accuracy": 0.59375,
+          "precision_fake": 0.5637393767705382,
+          "recall_fake": 0.8291666666666667,
+          "f1_fake": 0.6711635750421585,
+          "macro_f1": 0.5699142125891992,
+          "roc_auc": 0.6509027777777778,
+          "false_positive_rate": 0.6416666666666667,
+          "false_positives": 154,
+          "false_negatives": 41,
+          "confusion": [
+            [
+              86,
+              154
+            ],
+            [
+              41,
+              199
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6771653543307087,
+              "recall": 0.35833333333333334,
+              "f1": 0.46866485013623976,
+              "support": 240
+            },
+            "Fake": {
+              "precision": 0.5637393767705382,
+              "recall": 0.8291666666666667,
+              "f1": 0.6711635750421585,
+              "support": 240
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.5492375552275738,
+          0.6367737886935617
+        ],
+        "mean_fake_probability": 0.6848410367965698,
+        "mean_fake_probability_by_class": {
+          "legit": 0.6057252883911133,
+          "fake": 0.7639568448066711
+        },
+        "oracle_threshold": 0.8322159647941589,
+        "oracle_accuracy": 0.6145833333333334
+      },
+      "FakeNewsAMT / business": {
+        "group": "FakeNewsAMT / business",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "XGBoost (FakeNewsAMT / business)",
+          "n_samples": 80,
+          "accuracy": 0.5625,
+          "precision_fake": 0.5555555555555556,
+          "recall_fake": 0.625,
+          "f1_fake": 0.5882352941176471,
+          "macro_f1": 0.5607843137254902,
+          "roc_auc": 0.65,
+          "false_positive_rate": 0.5,
+          "false_positives": 20,
+          "false_negatives": 15,
+          "confusion": [
+            [
+              20,
+              20
+            ],
+            [
+              15,
+              25
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.5714285714285714,
+              "recall": 0.5,
+              "f1": 0.5333333333333333,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5555555555555556,
+              "recall": 0.625,
+              "f1": 0.5882352941176471,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.4534113429694972,
+          0.6658613908385618
+        ],
+        "mean_fake_probability": 0.513702929019928,
+        "mean_fake_probability_by_class": {
+          "legit": 0.43254223465919495,
+          "fake": 0.5948635935783386
+        },
+        "oracle_threshold": 0.7147889137268066,
+        "oracle_accuracy": 0.65
+      },
+      "FakeNewsAMT / education": {
+        "group": "FakeNewsAMT / education",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "XGBoost (FakeNewsAMT / education)",
+          "n_samples": 80,
+          "accuracy": 0.55,
+          "precision_fake": 0.53125,
+          "recall_fake": 0.85,
+          "f1_fake": 0.6538461538461539,
+          "macro_f1": 0.5054945054945055,
+          "roc_auc": 0.619375,
+          "false_positive_rate": 0.75,
+          "false_positives": 30,
+          "false_negatives": 6,
+          "confusion": [
+            [
+              10,
+              30
+            ],
+            [
+              6,
+              34
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.625,
+              "recall": 0.25,
+              "f1": 0.35714285714285715,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.53125,
+              "recall": 0.85,
+              "f1": 0.6538461538461539,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.44119507889355963,
+          0.6542231081528878
+        ],
+        "mean_fake_probability": 0.7547511458396912,
+        "mean_fake_probability_by_class": {
+          "legit": 0.7046288251876831,
+          "fake": 0.8048734664916992
+        },
+        "oracle_threshold": 0.8277593851089478,
+        "oracle_accuracy": 0.6125
+      },
+      "FakeNewsAMT / entertainment": {
+        "group": "FakeNewsAMT / entertainment",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "XGBoost (FakeNewsAMT / entertainment)",
+          "n_samples": 80,
+          "accuracy": 0.5625,
+          "precision_fake": 0.5362318840579711,
+          "recall_fake": 0.925,
+          "f1_fake": 0.6788990825688074,
+          "macro_f1": 0.4963122863824429,
+          "roc_auc": 0.61125,
+          "false_positive_rate": 0.8,
+          "false_positives": 32,
+          "false_negatives": 3,
+          "confusion": [
+            [
+              8,
+              32
+            ],
+            [
+              3,
+              37
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.7272727272727273,
+              "recall": 0.2,
+              "f1": 0.3137254901960784,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5362318840579711,
+              "recall": 0.925,
+              "f1": 0.6788990825688074,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.4534113429694972,
+          0.6658613908385618
+        ],
+        "mean_fake_probability": 0.8049749135971069,
+        "mean_fake_probability_by_class": {
+          "legit": 0.7695974707603455,
+          "fake": 0.8403526544570923
+        },
+        "oracle_threshold": 0.9444626569747925,
+        "oracle_accuracy": 0.625
+      },
+      "FakeNewsAMT / politics": {
+        "group": "FakeNewsAMT / politics",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "XGBoost (FakeNewsAMT / politics)",
+          "n_samples": 80,
+          "accuracy": 0.675,
+          "precision_fake": 0.6590909090909091,
+          "recall_fake": 0.725,
+          "f1_fake": 0.6904761904761905,
+          "macro_f1": 0.6741854636591479,
+          "roc_auc": 0.764375,
+          "false_positive_rate": 0.375,
+          "false_positives": 15,
+          "false_negatives": 11,
+          "confusion": [
+            [
+              25,
+              15
+            ],
+            [
+              11,
+              29
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6944444444444444,
+              "recall": 0.625,
+              "f1": 0.6578947368421053,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.6590909090909091,
+              "recall": 0.725,
+              "f1": 0.6904761904761905,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.5664052731061473,
+          0.7675583815564182
+        ],
+        "mean_fake_probability": 0.5502710342407227,
+        "mean_fake_probability_by_class": {
+          "legit": 0.39517471194267273,
+          "fake": 0.705367386341095
+        },
+        "oracle_threshold": 0.8908127546310425,
+        "oracle_accuracy": 0.725
+      },
+      "FakeNewsAMT / sports": {
+        "group": "FakeNewsAMT / sports",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "XGBoost (FakeNewsAMT / sports)",
+          "n_samples": 80,
+          "accuracy": 0.5875,
+          "precision_fake": 0.5538461538461539,
+          "recall_fake": 0.9,
+          "f1_fake": 0.6857142857142857,
+          "macro_f1": 0.5428571428571429,
+          "roc_auc": 0.595,
+          "false_positive_rate": 0.725,
+          "false_positives": 29,
+          "false_negatives": 4,
+          "confusion": [
+            [
+              11,
+              29
+            ],
+            [
+              4,
+              36
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.7333333333333333,
+              "recall": 0.275,
+              "f1": 0.4,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5538461538461539,
+              "recall": 0.9,
+              "f1": 0.6857142857142857,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.47804040345890164,
+          0.6889414238723812
+        ],
+        "mean_fake_probability": 0.7354812622070312,
+        "mean_fake_probability_by_class": {
+          "legit": 0.6792900562286377,
+          "fake": 0.7916723489761353
+        },
+        "oracle_threshold": 0.5490683913230896,
+        "oracle_accuracy": 0.65
+      },
+      "FakeNewsAMT / technology": {
+        "group": "FakeNewsAMT / technology",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "XGBoost (FakeNewsAMT / technology)",
+          "n_samples": 80,
+          "accuracy": 0.625,
+          "precision_fake": 0.5757575757575758,
+          "recall_fake": 0.95,
+          "f1_fake": 0.7169811320754716,
+          "macro_f1": 0.5807127882599581,
+          "roc_auc": 0.68375,
+          "false_positive_rate": 0.7,
+          "false_positives": 28,
+          "false_negatives": 2,
+          "confusion": [
+            [
+              12,
+              28
+            ],
+            [
+              2,
+              38
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.8571428571428571,
+              "recall": 0.3,
+              "f1": 0.4444444444444444,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5757575757575758,
+              "recall": 0.95,
+              "f1": 0.7169811320754716,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.5154872546314301,
+          0.7230582129846882
+        ],
+        "mean_fake_probability": 0.7498650550842285,
+        "mean_fake_probability_by_class": {
+          "legit": 0.6531184315681458,
+          "fake": 0.8466117978096008
+        },
+        "oracle_threshold": 0.8598855137825012,
+        "oracle_accuracy": 0.65
+      }
+    },
+    "textcnn": {
+      "All Perez-Rosas": {
+        "group": "All Perez-Rosas",
+        "n": 980,
+        "n_fake": 490,
+        "metrics": {
+          "model": "TextCNN (All Perez-Rosas)",
+          "n_samples": 980,
+          "accuracy": 0.5551020408163265,
+          "precision_fake": 0.5321428571428571,
+          "recall_fake": 0.9122448979591836,
+          "f1_fake": 0.6721804511278195,
+          "macro_f1": 0.49005847953216375,
+          "roc_auc": 0.6258975426905455,
+          "false_positive_rate": 0.8020408163265306,
+          "false_positives": 393,
+          "false_negatives": 43,
+          "confusion": [
+            [
+              97,
+              393
+            ],
+            [
+              43,
+              447
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6928571428571428,
+              "recall": 0.19795918367346937,
+              "f1": 0.30793650793650795,
+              "support": 490
+            },
+            "Fake": {
+              "precision": 0.5321428571428571,
+              "recall": 0.9122448979591836,
+              "f1": 0.6721804511278195,
+              "support": 490
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.523833247846573,
+          0.5859405363660346
+        ],
+        "mean_fake_probability": 0.8164450526237488,
+        "mean_fake_probability_by_class": {
+          "legit": 0.758307933807373,
+          "fake": 0.8745821714401245
+        },
+        "oracle_threshold": 0.9194321632385254,
+        "oracle_accuracy": 0.6071428571428571
+      },
+      "Celebrity": {
+        "group": "Celebrity",
+        "n": 500,
+        "n_fake": 250,
+        "metrics": {
+          "model": "TextCNN (Celebrity)",
+          "n_samples": 500,
+          "accuracy": 0.582,
+          "precision_fake": 0.548235294117647,
+          "recall_fake": 0.932,
+          "f1_fake": 0.6903703703703704,
+          "macro_f1": 0.5236467236467237,
+          "roc_auc": 0.641936,
+          "false_positive_rate": 0.768,
+          "false_positives": 192,
+          "false_negatives": 17,
+          "confusion": [
+            [
+              58,
+              192
+            ],
+            [
+              17,
+              233
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.7733333333333333,
+              "recall": 0.232,
+              "f1": 0.3569230769230769,
+              "support": 250
+            },
+            "Fake": {
+              "precision": 0.548235294117647,
+              "recall": 0.932,
+              "f1": 0.6903703703703704,
+              "support": 250
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.5383026562362386,
+          0.6244469519280668
+        ],
+        "mean_fake_probability": 0.8183203339576721,
+        "mean_fake_probability_by_class": {
+          "legit": 0.7464266419410706,
+          "fake": 0.8902138471603394
+        },
+        "oracle_threshold": 0.9563886523246765,
+        "oracle_accuracy": 0.616
+      },
+      "FakeNewsAMT": {
+        "group": "FakeNewsAMT",
+        "n": 480,
+        "n_fake": 240,
+        "metrics": {
+          "model": "TextCNN (FakeNewsAMT)",
+          "n_samples": 480,
+          "accuracy": 0.5270833333333333,
+          "precision_fake": 0.5156626506024097,
+          "recall_fake": 0.8916666666666667,
+          "f1_fake": 0.6534351145038167,
+          "macro_f1": 0.4545864097109248,
+          "roc_auc": 0.6093750000000001,
+          "false_positive_rate": 0.8375,
+          "false_positives": 201,
+          "false_negatives": 26,
+          "confusion": [
+            [
+              39,
+              201
+            ],
+            [
+              26,
+              214
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6,
+              "recall": 0.1625,
+              "f1": 0.25573770491803277,
+              "support": 240
+            },
+            "Fake": {
+              "precision": 0.5156626506024097,
+              "recall": 0.8916666666666667,
+              "f1": 0.6534351145038167,
+              "support": 240
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.48238125845326024,
+          0.5713553520128457
+        ],
+        "mean_fake_probability": 0.8144916892051697,
+        "mean_fake_probability_by_class": {
+          "legit": 0.7706843018531799,
+          "fake": 0.8582991361618042
+        },
+        "oracle_threshold": 0.8868879079818726,
+        "oracle_accuracy": 0.6104166666666667
+      },
+      "FakeNewsAMT / business": {
+        "group": "FakeNewsAMT / business",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "TextCNN (FakeNewsAMT / business)",
+          "n_samples": 80,
+          "accuracy": 0.5375,
+          "precision_fake": 0.5211267605633803,
+          "recall_fake": 0.925,
+          "f1_fake": 0.6666666666666666,
+          "macro_f1": 0.45578231292517,
+          "roc_auc": 0.6475,
+          "false_positive_rate": 0.85,
+          "false_positives": 34,
+          "false_negatives": 3,
+          "confusion": [
+            [
+              6,
+              34
+            ],
+            [
+              3,
+              37
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6666666666666666,
+              "recall": 0.15,
+              "f1": 0.24489795918367346,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5211267605633803,
+              "recall": 0.925,
+              "f1": 0.6666666666666666,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.42904357591268794,
+          0.6425200643721475
+        ],
+        "mean_fake_probability": 0.8119955062866211,
+        "mean_fake_probability_by_class": {
+          "legit": 0.7648642659187317,
+          "fake": 0.8591268658638
+        },
+        "oracle_threshold": 0.9657464623451233,
+        "oracle_accuracy": 0.6625
+      },
+      "FakeNewsAMT / education": {
+        "group": "FakeNewsAMT / education",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "TextCNN (FakeNewsAMT / education)",
+          "n_samples": 80,
+          "accuracy": 0.5375,
+          "precision_fake": 0.5223880597014925,
+          "recall_fake": 0.875,
+          "f1_fake": 0.6542056074766355,
+          "macro_f1": 0.47804619996473285,
+          "roc_auc": 0.689375,
+          "false_positive_rate": 0.8,
+          "false_positives": 32,
+          "false_negatives": 5,
+          "confusion": [
+            [
+              8,
+              32
+            ],
+            [
+              5,
+              35
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6153846153846154,
+              "recall": 0.2,
+              "f1": 0.3018867924528302,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5223880597014925,
+              "recall": 0.875,
+              "f1": 0.6542056074766355,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.42904357591268794,
+          0.6425200643721475
+        ],
+        "mean_fake_probability": 0.7791260480880737,
+        "mean_fake_probability_by_class": {
+          "legit": 0.705966591835022,
+          "fake": 0.8522855639457703
+        },
+        "oracle_threshold": 0.904800295829773,
+        "oracle_accuracy": 0.7125
+      },
+      "FakeNewsAMT / entertainment": {
+        "group": "FakeNewsAMT / entertainment",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "TextCNN (FakeNewsAMT / entertainment)",
+          "n_samples": 80,
+          "accuracy": 0.525,
+          "precision_fake": 0.5135135135135135,
+          "recall_fake": 0.95,
+          "f1_fake": 0.6666666666666666,
+          "macro_f1": 0.42028985507246375,
+          "roc_auc": 0.548125,
+          "false_positive_rate": 0.9,
+          "false_positives": 36,
+          "false_negatives": 2,
+          "confusion": [
+            [
+              4,
+              36
+            ],
+            [
+              2,
+              38
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6666666666666666,
+              "recall": 0.1,
+              "f1": 0.17391304347826086,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5135135135135135,
+              "recall": 0.95,
+              "f1": 0.6666666666666666,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.41695642649729936,
+          0.6307526670259243
+        ],
+        "mean_fake_probability": 0.9012895822525024,
+        "mean_fake_probability_by_class": {
+          "legit": 0.874015212059021,
+          "fake": 0.9285638928413391
+        },
+        "oracle_threshold": 0.9535302519798279,
+        "oracle_accuracy": 0.575
+      },
+      "FakeNewsAMT / politics": {
+        "group": "FakeNewsAMT / politics",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "TextCNN (FakeNewsAMT / politics)",
+          "n_samples": 80,
+          "accuracy": 0.5375,
+          "precision_fake": 0.5245901639344263,
+          "recall_fake": 0.8,
+          "f1_fake": 0.6336633663366337,
+          "macro_f1": 0.5032723611344185,
+          "roc_auc": 0.593125,
+          "false_positive_rate": 0.725,
+          "false_positives": 29,
+          "false_negatives": 8,
+          "confusion": [
+            [
+              11,
+              29
+            ],
+            [
+              8,
+              32
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.5789473684210527,
+              "recall": 0.275,
+              "f1": 0.3728813559322034,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5245901639344263,
+              "recall": 0.8,
+              "f1": 0.6336633663366337,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.42904357591268794,
+          0.6425200643721475
+        ],
+        "mean_fake_probability": 0.698656439781189,
+        "mean_fake_probability_by_class": {
+          "legit": 0.656474232673645,
+          "fake": 0.7408386468887329
+        },
+        "oracle_threshold": 0.6193015575408936,
+        "oracle_accuracy": 0.6
+      },
+      "FakeNewsAMT / sports": {
+        "group": "FakeNewsAMT / sports",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "TextCNN (FakeNewsAMT / sports)",
+          "n_samples": 80,
+          "accuracy": 0.4625,
+          "precision_fake": 0.4794520547945205,
+          "recall_fake": 0.875,
+          "f1_fake": 0.6194690265486725,
+          "macro_f1": 0.352287704763698,
+          "roc_auc": 0.57875,
+          "false_positive_rate": 0.95,
+          "false_positives": 38,
+          "false_negatives": 5,
+          "confusion": [
+            [
+              2,
+              38
+            ],
+            [
+              5,
+              35
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.2857142857142857,
+              "recall": 0.05,
+              "f1": 0.0851063829787234,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.4794520547945205,
+              "recall": 0.875,
+              "f1": 0.6194690265486725,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.35747993562785246,
+          0.570956424087312
+        ],
+        "mean_fake_probability": 0.8719776272773743,
+        "mean_fake_probability_by_class": {
+          "legit": 0.8648256063461304,
+          "fake": 0.8791294097900391
+        },
+        "oracle_threshold": 0.8733518123626709,
+        "oracle_accuracy": 0.6
+      },
+      "FakeNewsAMT / technology": {
+        "group": "FakeNewsAMT / technology",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "TextCNN (FakeNewsAMT / technology)",
+          "n_samples": 80,
+          "accuracy": 0.5625,
+          "precision_fake": 0.5362318840579711,
+          "recall_fake": 0.925,
+          "f1_fake": 0.6788990825688074,
+          "macro_f1": 0.4963122863824429,
+          "roc_auc": 0.611875,
+          "false_positive_rate": 0.8,
+          "false_positives": 32,
+          "false_negatives": 3,
+          "confusion": [
+            [
+              8,
+              32
+            ],
+            [
+              3,
+              37
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.7272727272727273,
+              "recall": 0.2,
+              "f1": 0.3137254901960784,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5362318840579711,
+              "recall": 0.925,
+              "f1": 0.6788990825688074,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.4534113429694972,
+          0.6658613908385618
+        ],
+        "mean_fake_probability": 0.8239051699638367,
+        "mean_fake_probability_by_class": {
+          "legit": 0.7579599618911743,
+          "fake": 0.8898504972457886
+        },
+        "oracle_threshold": 0.8512007594108582,
+        "oracle_accuracy": 0.65
+      }
+    },
+    "ensemble_soft_voting": {
+      "All Perez-Rosas": {
+        "group": "All Perez-Rosas",
+        "n": 980,
+        "n_fake": 490,
+        "metrics": {
+          "model": "Ensemble (soft voting) (All Perez-Rosas)",
+          "n_samples": 980,
+          "accuracy": 0.5775510204081633,
+          "precision_fake": 0.545346062052506,
+          "recall_fake": 0.9326530612244898,
+          "f1_fake": 0.6882530120481928,
+          "macro_f1": 0.5165948604544761,
+          "roc_auc": 0.6765306122448981,
+          "false_positive_rate": 0.7775510204081633,
+          "false_positives": 381,
+          "false_negatives": 33,
+          "confusion": [
+            [
+              109,
+              381
+            ],
+            [
+              33,
+              457
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.7676056338028169,
+              "recall": 0.22244897959183674,
+              "f1": 0.3449367088607595,
+              "support": 490
+            },
+            "Fake": {
+              "precision": 0.545346062052506,
+              "recall": 0.9326530612244898,
+              "f1": 0.6882530120481928,
+              "support": 490
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.5463816223451968,
+          0.6081148146947696
+        ],
+        "mean_fake_probability": 0.7801735997200012,
+        "mean_fake_probability_by_class": {
+          "legit": 0.7070934176445007,
+          "fake": 0.8532537817955017
+        },
+        "oracle_threshold": 0.8749253749847412,
+        "oracle_accuracy": 0.6316326530612245
+      },
+      "Celebrity": {
+        "group": "Celebrity",
+        "n": 500,
+        "n_fake": 250,
+        "metrics": {
+          "model": "Ensemble (soft voting) (Celebrity)",
+          "n_samples": 500,
+          "accuracy": 0.588,
+          "precision_fake": 0.55,
+          "recall_fake": 0.968,
+          "f1_fake": 0.7014492753623188,
+          "macro_f1": 0.5184665731650304,
+          "roc_auc": 0.702608,
+          "false_positive_rate": 0.792,
+          "false_positives": 198,
+          "false_negatives": 8,
+          "confusion": [
+            [
+              52,
+              198
+            ],
+            [
+              8,
+              242
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.8666666666666667,
+              "recall": 0.208,
+              "f1": 0.33548387096774196,
+              "support": 250
+            },
+            "Fake": {
+              "precision": 0.55,
+              "recall": 0.968,
+              "f1": 0.7014492753623188,
+              "support": 250
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.5443465920099858,
+          0.630311524068781
+        ],
+        "mean_fake_probability": 0.8094605803489685,
+        "mean_fake_probability_by_class": {
+          "legit": 0.7252264618873596,
+          "fake": 0.8936945796012878
+        },
+        "oracle_threshold": 0.9349489212036133,
+        "oracle_accuracy": 0.652
+      },
+      "FakeNewsAMT": {
+        "group": "FakeNewsAMT",
+        "n": 480,
+        "n_fake": 240,
+        "metrics": {
+          "model": "Ensemble (soft voting) (FakeNewsAMT)",
+          "n_samples": 480,
+          "accuracy": 0.5666666666666667,
+          "precision_fake": 0.5402010050251256,
+          "recall_fake": 0.8958333333333334,
+          "f1_fake": 0.6739811912225705,
+          "macro_f1": 0.5140092291516579,
+          "roc_auc": 0.6529340277777778,
+          "false_positive_rate": 0.7625,
+          "false_positives": 183,
+          "false_negatives": 25,
+          "confusion": [
+            [
+              57,
+              183
+            ],
+            [
+              25,
+              215
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6951219512195121,
+              "recall": 0.2375,
+              "f1": 0.35403726708074534,
+              "support": 240
+            },
+            "Fake": {
+              "precision": 0.5402010050251256,
+              "recall": 0.8958333333333334,
+              "f1": 0.6739811912225705,
+              "support": 240
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.5219800539963834,
+          0.6102946794586462
+        ],
+        "mean_fake_probability": 0.7496663928031921,
+        "mean_fake_probability_by_class": {
+          "legit": 0.688204824924469,
+          "fake": 0.8111279606819153
+        },
+        "oracle_threshold": 0.8460251092910767,
+        "oracle_accuracy": 0.6229166666666667
+      },
+      "FakeNewsAMT / business": {
+        "group": "FakeNewsAMT / business",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "Ensemble (soft voting) (FakeNewsAMT / business)",
+          "n_samples": 80,
+          "accuracy": 0.6,
+          "precision_fake": 0.5689655172413793,
+          "recall_fake": 0.825,
+          "f1_fake": 0.673469387755102,
+          "macro_f1": 0.5786701777485188,
+          "roc_auc": 0.6575000000000001,
+          "false_positive_rate": 0.625,
+          "false_positives": 25,
+          "false_negatives": 7,
+          "confusion": [
+            [
+              15,
+              25
+            ],
+            [
+              7,
+              33
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6818181818181818,
+              "recall": 0.375,
+              "f1": 0.4838709677419355,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5689655172413793,
+              "recall": 0.825,
+              "f1": 0.673469387755102,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.4904546500516039,
+          0.7003817240412906
+        ],
+        "mean_fake_probability": 0.6628492474555969,
+        "mean_fake_probability_by_class": {
+          "legit": 0.5987032055854797,
+          "fake": 0.7269952297210693
+        },
+        "oracle_threshold": 0.7833282351493835,
+        "oracle_accuracy": 0.6375
+      },
+      "FakeNewsAMT / education": {
+        "group": "FakeNewsAMT / education",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "Ensemble (soft voting) (FakeNewsAMT / education)",
+          "n_samples": 80,
+          "accuracy": 0.5375,
+          "precision_fake": 0.5223880597014925,
+          "recall_fake": 0.875,
+          "f1_fake": 0.6542056074766355,
+          "macro_f1": 0.47804619996473285,
+          "roc_auc": 0.67625,
+          "false_positive_rate": 0.8,
+          "false_positives": 32,
+          "false_negatives": 5,
+          "confusion": [
+            [
+              8,
+              32
+            ],
+            [
+              5,
+              35
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6153846153846154,
+              "recall": 0.2,
+              "f1": 0.3018867924528302,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5223880597014925,
+              "recall": 0.875,
+              "f1": 0.6542056074766355,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.42904357591268794,
+          0.6425200643721475
+        ],
+        "mean_fake_probability": 0.7669385671615601,
+        "mean_fake_probability_by_class": {
+          "legit": 0.7052977085113525,
+          "fake": 0.8285795450210571
+        },
+        "oracle_threshold": 0.8453662991523743,
+        "oracle_accuracy": 0.6875
+      },
+      "FakeNewsAMT / entertainment": {
+        "group": "FakeNewsAMT / entertainment",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "Ensemble (soft voting) (FakeNewsAMT / entertainment)",
+          "n_samples": 80,
+          "accuracy": 0.5125,
+          "precision_fake": 0.5064935064935064,
+          "recall_fake": 0.975,
+          "f1_fake": 0.6666666666666666,
+          "macro_f1": 0.3798449612403101,
+          "roc_auc": 0.59875,
+          "false_positive_rate": 0.95,
+          "false_positives": 38,
+          "false_negatives": 1,
+          "confusion": [
+            [
+              2,
+              38
+            ],
+            [
+              1,
+              39
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6666666666666666,
+              "recall": 0.05,
+              "f1": 0.09302325581395349,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5064935064935064,
+              "recall": 0.975,
+              "f1": 0.6666666666666666,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.40493334216542254,
+          0.6189212045961893
+        ],
+        "mean_fake_probability": 0.8531322479248047,
+        "mean_fake_probability_by_class": {
+          "legit": 0.8218063116073608,
+          "fake": 0.8844582438468933
+        },
+        "oracle_threshold": 0.9656212329864502,
+        "oracle_accuracy": 0.625
+      },
+      "FakeNewsAMT / politics": {
+        "group": "FakeNewsAMT / politics",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "Ensemble (soft voting) (FakeNewsAMT / politics)",
+          "n_samples": 80,
+          "accuracy": 0.6125,
+          "precision_fake": 0.5849056603773585,
+          "recall_fake": 0.775,
+          "f1_fake": 0.6666666666666666,
+          "macro_f1": 0.6019900497512438,
+          "roc_auc": 0.7181249999999999,
+          "false_positive_rate": 0.55,
+          "false_positives": 22,
+          "false_negatives": 9,
+          "confusion": [
+            [
+              18,
+              22
+            ],
+            [
+              9,
+              31
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6666666666666666,
+              "recall": 0.45,
+              "f1": 0.5373134328358209,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5849056603773585,
+              "recall": 0.775,
+              "f1": 0.6666666666666666,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.5029365721075572,
+          0.7117543487469493
+        ],
+        "mean_fake_probability": 0.6244637370109558,
+        "mean_fake_probability_by_class": {
+          "legit": 0.5258244872093201,
+          "fake": 0.7231029868125916
+        },
+        "oracle_threshold": 0.74968421459198,
+        "oracle_accuracy": 0.725
+      },
+      "FakeNewsAMT / sports": {
+        "group": "FakeNewsAMT / sports",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "Ensemble (soft voting) (FakeNewsAMT / sports)",
+          "n_samples": 80,
+          "accuracy": 0.5125,
+          "precision_fake": 0.5064935064935064,
+          "recall_fake": 0.975,
+          "f1_fake": 0.6666666666666666,
+          "macro_f1": 0.3798449612403101,
+          "roc_auc": 0.5925,
+          "false_positive_rate": 0.95,
+          "false_positives": 38,
+          "false_negatives": 1,
+          "confusion": [
+            [
+              2,
+              38
+            ],
+            [
+              1,
+              39
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.6666666666666666,
+              "recall": 0.05,
+              "f1": 0.09302325581395349,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5064935064935064,
+              "recall": 0.975,
+              "f1": 0.6666666666666666,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.40493334216542254,
+          0.6189212045961893
+        ],
+        "mean_fake_probability": 0.8037294149398804,
+        "mean_fake_probability_by_class": {
+          "legit": 0.7720578908920288,
+          "fake": 0.8354008793830872
+        },
+        "oracle_threshold": 0.8779677152633667,
+        "oracle_accuracy": 0.6125
+      },
+      "FakeNewsAMT / technology": {
+        "group": "FakeNewsAMT / technology",
+        "n": 80,
+        "n_fake": 40,
+        "metrics": {
+          "model": "Ensemble (soft voting) (FakeNewsAMT / technology)",
+          "n_samples": 80,
+          "accuracy": 0.625,
+          "precision_fake": 0.5757575757575758,
+          "recall_fake": 0.95,
+          "f1_fake": 0.7169811320754716,
+          "macro_f1": 0.5807127882599581,
+          "roc_auc": 0.665625,
+          "false_positive_rate": 0.7,
+          "false_positives": 28,
+          "false_negatives": 2,
+          "confusion": [
+            [
+              12,
+              28
+            ],
+            [
+              2,
+              38
+            ]
+          ],
+          "per_class": {
+            "Legit": {
+              "precision": 0.8571428571428571,
+              "recall": 0.3,
+              "f1": 0.4444444444444444,
+              "support": 40
+            },
+            "Fake": {
+              "precision": 0.5757575757575758,
+              "recall": 0.95,
+              "f1": 0.7169811320754716,
+              "support": 40
+            }
+          }
+        },
+        "accuracy_ci": [
+          0.5154872546314301,
+          0.7230582129846882
+        ],
+        "mean_fake_probability": 0.786885142326355,
+        "mean_fake_probability_by_class": {
+          "legit": 0.7055391073226929,
+          "fake": 0.8682311177253723
+        },
+        "oracle_threshold": 0.5915769338607788,
+        "oracle_accuracy": 0.6625
+      }
+    }
+  },
+  "score_seconds": 22.60062840000319,
+  "figures": {
+    "pdf": "C:\\Users\\ndach\\PycharmProjects\\MSc\\artifacts\\figures\\cross_dataset.pdf",
+    "png": "C:\\Users\\ndach\\PycharmProjects\\MSc\\artifacts\\figures\\cross_dataset.png"
+  }
+}

@@ -4,7 +4,6 @@ data/embeddings/
 data/cache/
 
 # Generated models, metrics and figures
-artifacts/
 /paper/
 
 # Python

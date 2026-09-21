@@ -1,0 +1,67 @@
+{
+  "seed": 5,
+  "scored_on": "validation",
+  "records": [
+    {
+      "components": 50,
+      "explained_variance": 0.10877143859438003,
+      "val_accuracy": 0.9524469707472619,
+      "val_f1": 0.954113712374582,
+      "val_roc_auc": 0.9904966324590474,
+      "feature_fit_seconds": 357.4,
+      "train_seconds": 15.6
+    },
+    {
+      "components": 100,
+      "explained_variance": 0.15255156204065376,
+      "val_accuracy": 0.9574379592402606,
+      "val_f1": 0.9588637277234356,
+      "val_roc_auc": 0.9919168244700538,
+      "feature_fit_seconds": 652.3,
+      "train_seconds": 25.3
+    },
+    {
+      "components": 200,
+      "explained_variance": 0.21039202419600783,
+      "val_accuracy": 0.9588243449327603,
+      "val_f1": 0.9603630054717737,
+      "val_roc_auc": 0.992738222840184,
+      "feature_fit_seconds": 710.3,
+      "train_seconds": 46.8
+    },
+    {
+      "components": 300,
+      "explained_variance": 0.25444189220506125,
+      "val_accuracy": 0.9578538749480106,
+      "val_f1": 0.9593256622959593,
+      "val_roc_auc": 0.992379038990838,
+      "feature_fit_seconds": 849.4,
+      "train_seconds": 66.4
+    },
+    {
+      "components": 500,
+      "explained_variance": 0.32454440126326356,
+      "val_accuracy": 0.9578538749480106,
+      "val_f1": 0.9592929833958221,
+      "val_roc_auc": 0.9919848447191587,
+      "feature_fit_seconds": 600.5,
+      "train_seconds": 71.4
+    },
+    {
+      "components": 800,
+      "explained_variance": 0.40685039956483765,
+      "val_accuracy": 0.9582697906557605,
+      "val_f1": 0.9596568824554349,
+      "val_roc_auc": 0.9924416730211225,
+      "feature_fit_seconds": 347.5,
+      "train_seconds": 76.9
+    }
+  ],
+  "best_components_on_validation": 200,
+  "best_validation_accuracy": 0.9588243449327603,
+  "chosen_components": 300,
+  "figures": {
+    "pdf": "C:\\Users\\ndach\\PycharmProjects\\MSc\\artifacts\\figures\\svd_sweep.pdf",
+    "png": "C:\\Users\\ndach\\PycharmProjects\\MSc\\artifacts\\figures\\svd_sweep.png"
+  }
+}

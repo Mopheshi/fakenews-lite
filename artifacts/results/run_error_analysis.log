@@ -1,0 +1,33 @@
+2026-09-20 21:55:30.183219: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-09-20 21:55:32.382513: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+21:55:39 INFO    fakenews.data.loader | Loaded 72134 articles from C:\Users\ndach\PycharmProjects\MSc\data\raw\WELFake_Dataset.csv
+21:55:39 INFO    fakenews.data.loader | Label distribution: 35028 legit (0), 37106 fake (1)
+21:55:39 INFO    fakenews.data.loader | Missing values: 558 titles, 39 texts (filled with empty strings)
+21:56:39 INFO    _corpus | Aligned 72125 raw articles to the cache (9 dropped, 21289 carry a wire dateline)
+21:56:44 INFO    __main__ | ensemble_soft_voting: 200 false positives of 7006 legitimate, 93 false negatives of 7419 fake
+21:56:44 INFO    __main__ | Wrote error_sample.md for manual reading
+21:56:44 INFO    _report | Wrote error_analysis.json and error_analysis.md
+
+| Property | Among errors | Among correct | Difference | 95% CI | p |
+| --- | --- | --- | --- | --- | --- |
+| Under 1,000 characters | 36 (18.0%) | 1196 (17.6%) | +0.4% | [-4.4%, +6.4%] | 0.851 |
+| Carries a wire dateline | 6 (3.0%) | 4288 (63.0%) | -60.0% | [-62.0%, -56.4%] | 7.2e-73 |
+| Armed-conflict vocabulary | 11 (5.5%) | 372 (5.5%) | +0.0% | [-2.4%, +4.1%] | 1 |
+| Satire marker | 2 (1.0%) | 29 (0.4%) | +0.6% | [-0.2%, +3.1%] | 0.221 |
+| Title mostly upper case | 0 (0.0%) | 0 (0.0%) | +0.0% | [-0.1%, +1.9%] | 1 |
+| Three or more exclamation marks | 7 (3.5%) | 116 (1.7%) | +1.8% | [-0.0%, +5.4%] | 0.0892 |
+| Ten or more quotation marks | 98 (49.0%) | 2861 (42.0%) | +7.0% | [+0.0%, +13.9%] | 0.0502 |
+| Dense first/second person | 38 (19.0%) | 988 (14.5%) | +4.5% | [-0.4%, +10.5%] | 0.0841 |
+
+| Group | Articles | Errors | Error rate |
+| --- | --- | --- | --- |
+| Legitimate, wire dateline | 4294 | 6 | 0.0014 |
+| Legitimate, no dateline | 2712 | 194 | 0.0715 |
+| Fake, no dateline | 7417 | 93 | 0.0125 |
+
+False positive rate, no dateline vs dateline: 7.15% vs 0.14% (difference +7.01%, p = 7.2e-73)
+
+| Error type | Category | Articles | Share of sample |
+| --- | --- | --- | --- |
+| false positive | unlabelled | 27 | 1.0000 |
+| false negative | unlabelled | 13 | 1.0000 |

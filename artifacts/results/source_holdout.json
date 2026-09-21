@@ -1,0 +1,303 @@
+{
+  "seed": 5,
+  "group_size": 3000,
+  "design": "Every article carrying a (Reuters) dateline is excluded from training and validation. The false positive rate on 3,000 of those articles is compared against the rate on 3,000 legitimate articles from publishers present in training, scored by the same model at the same threshold.",
+  "composition": {
+    "train_total": 18826,
+    "train_legit": 9413,
+    "train_fake": 9413,
+    "validation_total": 2690,
+    "test_seen_legit": 3000,
+    "test_fake": 3000,
+    "test_unseen_legit": 3000,
+    "dateline_articles_excluded": 21289,
+    "training_balanced": 1
+  },
+  "results": {
+    "xgboost": {
+      "model": "XGBoost",
+      "seen": {
+        "model": "XGBoost (seen publishers)",
+        "n_samples": 6000,
+        "accuracy": 0.9343333333333333,
+        "precision_fake": 0.928336620644313,
+        "recall_fake": 0.9413333333333334,
+        "f1_fake": 0.9347898047004303,
+        "macro_f1": 0.9343301155089933,
+        "roc_auc": 0.983601111111111,
+        "false_positive_rate": 0.07266666666666667,
+        "false_positives": 218,
+        "false_negatives": 176,
+        "confusion": [
+          [
+            2782,
+            218
+          ],
+          [
+            176,
+            2824
+          ]
+        ],
+        "per_class": {
+          "Legit": {
+            "precision": 0.940500338066261,
+            "recall": 0.9273333333333333,
+            "f1": 0.9338704263175562,
+            "support": 3000
+          },
+          "Fake": {
+            "precision": 0.928336620644313,
+            "recall": 0.9413333333333334,
+            "f1": 0.9347898047004303,
+            "support": 3000
+          }
+        }
+      },
+      "unseen": {
+        "model": "XGBoost (unseen publisher)",
+        "n_samples": 6000,
+        "accuracy": 0.8493333333333334,
+        "precision_fake": 0.795045045045045,
+        "recall_fake": 0.9413333333333334,
+        "f1_fake": 0.8620268620268621,
+        "macro_f1": 0.8480472048753988,
+        "roc_auc": 0.9551270000000001,
+        "false_positive_rate": 0.24266666666666667,
+        "false_positives": 728,
+        "false_negatives": 176,
+        "confusion": [
+          [
+            2272,
+            728
+          ],
+          [
+            176,
+            2824
+          ]
+        ],
+        "per_class": {
+          "Legit": {
+            "precision": 0.9281045751633987,
+            "recall": 0.7573333333333333,
+            "f1": 0.8340675477239354,
+            "support": 3000
+          },
+          "Fake": {
+            "precision": 0.795045045045045,
+            "recall": 0.9413333333333334,
+            "f1": 0.8620268620268621,
+            "support": 3000
+          }
+        }
+      }
+    },
+    "textcnn": {
+      "model": "TextCNN",
+      "seen": {
+        "model": "TextCNN (seen publishers)",
+        "n_samples": 6000,
+        "accuracy": 0.9496666666666667,
+        "precision_fake": 0.9680777238029147,
+        "recall_fake": 0.93,
+        "f1_fake": 0.948656919415165,
+        "macro_f1": 0.9496471913192203,
+        "roc_auc": 0.9916361111111109,
+        "false_positive_rate": 0.030666666666666665,
+        "false_positives": 92,
+        "false_negatives": 210,
+        "confusion": [
+          [
+            2908,
+            92
+          ],
+          [
+            210,
+            2790
+          ]
+        ],
+        "per_class": {
+          "Legit": {
+            "precision": 0.932649134060295,
+            "recall": 0.9693333333333334,
+            "f1": 0.9506374632232756,
+            "support": 3000
+          },
+          "Fake": {
+            "precision": 0.9680777238029147,
+            "recall": 0.93,
+            "f1": 0.948656919415165,
+            "support": 3000
+          }
+        }
+      },
+      "unseen": {
+        "model": "TextCNN (unseen publisher)",
+        "n_samples": 6000,
+        "accuracy": 0.8415,
+        "precision_fake": 0.7901444350042481,
+        "recall_fake": 0.93,
+        "f1_fake": 0.8543867707854846,
+        "macro_f1": 0.8402487885743112,
+        "roc_auc": 0.9470271111111112,
+        "false_positive_rate": 0.247,
+        "false_positives": 741,
+        "false_negatives": 210,
+        "confusion": [
+          [
+            2259,
+            741
+          ],
+          [
+            210,
+            2790
+          ]
+        ],
+        "per_class": {
+          "Legit": {
+            "precision": 0.9149453219927096,
+            "recall": 0.753,
+            "f1": 0.8261108063631377,
+            "support": 3000
+          },
+          "Fake": {
+            "precision": 0.7901444350042481,
+            "recall": 0.93,
+            "f1": 0.8543867707854846,
+            "support": 3000
+          }
+        }
+      }
+    },
+    "ensemble_soft_voting": {
+      "model": "Ensemble (soft voting)",
+      "seen": {
+        "model": "Ensemble (soft voting) (seen publishers)",
+        "n_samples": 6000,
+        "accuracy": 0.9586666666666667,
+        "precision_fake": 0.9667571234735414,
+        "recall_fake": 0.95,
+        "f1_fake": 0.9583053127101546,
+        "macro_f1": 0.9586635618408672,
+        "roc_auc": 0.9924691111111111,
+        "false_positive_rate": 0.03266666666666666,
+        "false_positives": 98,
+        "false_negatives": 150,
+        "confusion": [
+          [
+            2902,
+            98
+          ],
+          [
+            150,
+            2850
+          ]
+        ],
+        "per_class": {
+          "Legit": {
+            "precision": 0.9508519003931848,
+            "recall": 0.9673333333333334,
+            "f1": 0.9590218109715797,
+            "support": 3000
+          },
+          "Fake": {
+            "precision": 0.9667571234735414,
+            "recall": 0.95,
+            "f1": 0.9583053127101546,
+            "support": 3000
+          }
+        }
+      },
+      "unseen": {
+        "model": "Ensemble (soft voting) (unseen publisher)",
+        "n_samples": 6000,
+        "accuracy": 0.8666666666666667,
+        "precision_fake": 0.8142857142857143,
+        "recall_fake": 0.95,
+        "f1_fake": 0.8769230769230769,
+        "macro_f1": 0.8657342657342657,
+        "roc_auc": 0.9668973888888888,
+        "false_positive_rate": 0.21666666666666667,
+        "false_positives": 650,
+        "false_negatives": 150,
+        "confusion": [
+          [
+            2350,
+            650
+          ],
+          [
+            150,
+            2850
+          ]
+        ],
+        "per_class": {
+          "Legit": {
+            "precision": 0.94,
+            "recall": 0.7833333333333333,
+            "f1": 0.8545454545454545,
+            "support": 3000
+          },
+          "Fake": {
+            "precision": 0.8142857142857143,
+            "recall": 0.95,
+            "f1": 0.8769230769230769,
+            "support": 3000
+          }
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "xgboost": {
+      "label_a": "unseen publisher",
+      "label_b": "seen publishers",
+      "count_a": 728,
+      "total_a": 3000,
+      "rate_a": 0.24266666666666667,
+      "count_b": 218,
+      "total_b": 3000,
+      "rate_b": 0.07266666666666667,
+      "difference": 0.16999999999999998,
+      "ci_lower": 0.15205318174589655,
+      "ci_upper": 0.1879428429136987,
+      "p_value": 5.744748062952393e-76,
+      "test": "two-sided Fisher exact, Newcombe interval on the difference"
+    },
+    "textcnn": {
+      "label_a": "unseen publisher",
+      "label_b": "seen publishers",
+      "count_a": 741,
+      "total_a": 3000,
+      "rate_a": 0.247,
+      "count_b": 92,
+      "total_b": 3000,
+      "rate_b": 0.030666666666666665,
+      "difference": 0.21633333333333332,
+      "ci_lower": 0.1997727233261456,
+      "ci_upper": 0.23304695984658066,
+      "p_value": 1.6302530736359708e-144,
+      "test": "two-sided Fisher exact, Newcombe interval on the difference"
+    },
+    "ensemble_soft_voting": {
+      "label_a": "unseen publisher",
+      "label_b": "seen publishers",
+      "count_a": 650,
+      "total_a": 3000,
+      "rate_a": 0.21666666666666667,
+      "count_b": 98,
+      "total_b": 3000,
+      "rate_b": 0.03266666666666666,
+      "difference": 0.184,
+      "ci_lower": 0.16801909357537315,
+      "ci_upper": 0.20017048934564546,
+      "p_value": 2.3809222295687095e-113,
+      "test": "two-sided Fisher exact, Newcombe interval on the difference"
+    }
+  },
+  "timings_seconds": {
+    "tfidf_svd_seconds": 139.40344690000347,
+    "xgboost_train_seconds": 14.933172999997623,
+    "sequence_encoding_seconds": 40.38389930000994,
+    "textcnn_train_seconds": 387.2720680000057,
+    "textcnn_best_epoch": 6.0
+  }
+}

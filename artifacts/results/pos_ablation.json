@@ -1,0 +1,280 @@
+{
+  "seed": 5,
+  "n_documents": 72125,
+  "class_conditional_effects": [
+    {
+      "feature": "pos_nouns",
+      "mean_legit": 0.3362010622521922,
+      "mean_fake": 0.3395182254799043,
+      "std_legit": 0.04787577739556065,
+      "std_fake": 0.09958508180024196,
+      "cohens_d": 0.042080496806959515,
+      "t_statistic": 5.750380378695465,
+      "p_value": 8.952121607641487e-09
+    },
+    {
+      "feature": "pos_verbs",
+      "mean_legit": 0.15103971015750653,
+      "mean_fake": 0.14806272819668428,
+      "std_legit": 0.02310479665199892,
+      "std_fake": 0.0375945496765521,
+      "cohens_d": -0.09479650220831469,
+      "t_statistic": -12.890035810169923,
+      "p_value": 5.729828598266705e-38
+    },
+    {
+      "feature": "pos_adjectives",
+      "mean_legit": 0.06883125072429953,
+      "mean_fake": 0.06539891336777394,
+      "std_legit": 0.018607314795232904,
+      "std_fake": 0.023244165280739183,
+      "cohens_d": -0.16251765152028586,
+      "t_statistic": -21.951382330846986,
+      "p_value": 1.9185588870170498e-106
+    },
+    {
+      "feature": "pos_adverbs",
+      "mean_legit": 0.02772024789826092,
+      "mean_fake": 0.035780629246193976,
+      "std_legit": 0.012781758777491405,
+      "std_fake": 0.01785719842425901,
+      "cohens_d": 0.5166943419754094,
+      "t_statistic": 69.99794740881413,
+      "p_value": 0.0
+    },
+    {
+      "feature": "pos_pronouns",
+      "mean_legit": 0.03897553984843259,
+      "mean_fake": 0.05148223845992787,
+      "std_legit": 0.020941787996114018,
+      "std_fake": 0.028161616172885453,
+      "cohens_d": 0.5019158881906048,
+      "t_statistic": 67.92838179556546,
+      "p_value": 0.0
+    },
+    {
+      "feature": "pos_modals",
+      "mean_legit": 0.00966015026357303,
+      "mean_fake": 0.008802249850250049,
+      "std_legit": 0.0077509439406325585,
+      "std_fake": 0.007958350387031816,
+      "cohens_d": -0.10917116621666409,
+      "t_statistic": -14.664626900730175,
+      "p_value": 1.2766569083162032e-48
+    }
+  ],
+  "ablation": {
+    "with_pos": {
+      "metrics": {
+        "model": "XGBoost (with_pos)",
+        "n_samples": 14425,
+        "accuracy": 0.9575043327556326,
+        "precision_fake": 0.9495376486129459,
+        "recall_fake": 0.9688637282652649,
+        "f1_fake": 0.9591033424511308,
+        "macro_f1": 0.9574392695229466,
+        "roc_auc": 0.9924927152152757,
+        "false_positive_rate": 0.0545246931201827,
+        "false_positives": 382,
+        "false_negatives": 231,
+        "confusion": [
+          [
+            6624,
+            382
+          ],
+          [
+            231,
+            7188
+          ]
+        ],
+        "per_class": {
+          "Legit": {
+            "precision": 0.9663019693654267,
+            "recall": 0.9454753068798173,
+            "f1": 0.9557751965947623,
+            "support": 7006
+          },
+          "Fake": {
+            "precision": 0.9495376486129459,
+            "recall": 0.9688637282652649,
+            "f1": 0.9591033424511308,
+            "support": 7419
+          }
+        }
+      },
+      "n_features": 306,
+      "train_seconds": 24.771066099987365
+    },
+    "without_pos": {
+      "metrics": {
+        "model": "XGBoost (without_pos)",
+        "n_samples": 14425,
+        "accuracy": 0.9559792027729636,
+        "precision_fake": 0.9477296726504751,
+        "recall_fake": 0.967785415824235,
+        "f1_fake": 0.9576525508502834,
+        "macro_f1": 0.9559103605929512,
+        "roc_auc": 0.9925603213728151,
+        "false_positive_rate": 0.056522980302597774,
+        "false_positives": 396,
+        "false_negatives": 239,
+        "confusion": [
+          [
+            6610,
+            396
+          ],
+          [
+            239,
+            7180
+          ]
+        ],
+        "per_class": {
+          "Legit": {
+            "precision": 0.9651043948021609,
+            "recall": 0.9434770196974023,
+            "f1": 0.954168170335619,
+            "support": 7006
+          },
+          "Fake": {
+            "precision": 0.9477296726504751,
+            "recall": 0.967785415824235,
+            "f1": 0.9576525508502834,
+            "support": 7419
+          }
+        }
+      },
+      "n_features": 300,
+      "train_seconds": 22.59435430006124
+    }
+  },
+  "delta_accuracy": 0.0015251299826690712,
+  "mcnemar": {
+    "model_a": "XGBoost with POS",
+    "model_b": "XGBoost without POS",
+    "a_correct_b_wrong": 141,
+    "b_correct_a_wrong": 119,
+    "n_discordant": 260,
+    "statistic": 1.6961538461538461,
+    "p_value": 0.1927917392622811,
+    "test": "chi-square with continuity correction"
+  },
+  "pos_gain_share": 0.03285266650825413,
+  "pos_importance": [
+    {
+      "POS category": "Nouns",
+      "Gain": 13.051724433898926,
+      "Share of total gain": 0.005795345505324366,
+      "Rank (of 306)": 30
+    },
+    {
+      "POS category": "Verbs",
+      "Gain": 12.489076614379883,
+      "Share of total gain": 0.005545513498186582,
+      "Rank (of 306)": 32
+    },
+    {
+      "POS category": "Adjectives",
+      "Gain": 4.687305927276611,
+      "Share of total gain": 0.0020813002508058573,
+      "Rank (of 306)": 166
+    },
+    {
+      "POS category": "Adverbs",
+      "Gain": 25.686120986938477,
+      "Share of total gain": 0.011405385285659377,
+      "Rank (of 306)": 7
+    },
+    {
+      "POS category": "Pronouns",
+      "Gain": 13.761825561523438,
+      "Share of total gain": 0.0061106510727339846,
+      "Rank (of 306)": 23
+    },
+    {
+      "POS category": "Modals",
+      "Gain": 4.311588764190674,
+      "Share of total gain": 0.0019144708955439599,
+      "Rank (of 306)": 196
+    }
+  ],
+  "ensemble": {
+    "with_pos": {
+      "model": "Ensemble (with_pos)",
+      "n_samples": 14425,
+      "accuracy": 0.9796880415944541,
+      "precision_fake": 0.9734254584108424,
+      "recall_fake": 0.9874646178730287,
+      "f1_fake": 0.9803947808631649,
+      "macro_f1": 0.9796616119346389,
+      "roc_auc": 0.9975158873508264,
+      "false_positive_rate": 0.028546959748786755,
+      "false_positives": 200,
+      "false_negatives": 93,
+      "confusion": [
+        [
+          6806,
+          200
+        ],
+        [
+          93,
+          7326
+        ]
+      ],
+      "per_class": {
+        "Legit": {
+          "precision": 0.9865197854761559,
+          "recall": 0.9714530402512133,
+          "f1": 0.9789284430061129,
+          "support": 7006
+        },
+        "Fake": {
+          "precision": 0.9734254584108424,
+          "recall": 0.9874646178730287,
+          "f1": 0.9803947808631649,
+          "support": 7419
+        }
+      }
+    },
+    "without_pos": {
+      "model": "Ensemble (without_pos)",
+      "n_samples": 14425,
+      "accuracy": 0.9796880415944541,
+      "precision_fake": 0.9734254584108424,
+      "recall_fake": 0.9874646178730287,
+      "f1_fake": 0.9803947808631649,
+      "macro_f1": 0.9796616119346389,
+      "roc_auc": 0.9974689632135927,
+      "false_positive_rate": 0.028546959748786755,
+      "false_positives": 200,
+      "false_negatives": 93,
+      "confusion": [
+        [
+          6806,
+          200
+        ],
+        [
+          93,
+          7326
+        ]
+      ],
+      "per_class": {
+        "Legit": {
+          "precision": 0.9865197854761559,
+          "recall": 0.9714530402512133,
+          "f1": 0.9789284430061129,
+          "support": 7006
+        },
+        "Fake": {
+          "precision": 0.9734254584108424,
+          "recall": 0.9874646178730287,
+          "f1": 0.9803947808631649,
+          "support": 7419
+        }
+      }
+    }
+  },
+  "figures": {
+    "pdf": "C:\\Users\\ndach\\PycharmProjects\\MSc\\artifacts\\figures\\pos_effect_sizes.pdf",
+    "png": "C:\\Users\\ndach\\PycharmProjects\\MSc\\artifacts\\figures\\pos_effect_sizes.png"
+  }
+}

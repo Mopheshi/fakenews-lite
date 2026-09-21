@@ -1,0 +1,37 @@
+﻿python.exe : 2026-08-04 18:58:00.435570: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to 
+floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+At line:1 char:487
++ ...  | Select-Object -Last 2; & $py experiments\run_seeds.py 2>&1 | Tee-O ...
++                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (2026-08-04 18:5...ONEDNN_OPTS=0`.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+2026-08-04 18:58:01.823807: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off 
+errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+18:58:02 INFO    __main__ | Reusing existing result for seed 5
+18:58:02 INFO    __main__ | Reusing existing result for seed 17
+18:58:02 INFO    __main__ | Reusing existing result for seed 42
+18:58:02 INFO    __main__ | Reusing existing result for seed 123
+18:58:02 INFO    __main__ | Reusing existing result for seed 2024
+18:58:18 INFO    _report | Wrote seed_stability.json and seed_stability.md
+
+| Model | accuracy | f1-fake | macro-f1 | roc-auc | n seeds |
+| --- | --- | --- | --- | --- | --- |
+| XGBoost | 0.9582 ± 0.0006 | 0.9596 ± 0.0006 | 0.9581 ± 0.0006 | 0.9924 ± 0.0002 | 5 |
+| TextCNN | 0.9746 ± 0.0031 | 0.9754 ± 0.0031 | 0.9746 ± 0.0031 | 0.9968 ± 0.0008 | 5 |
+| Ensemble (soft voting) | 0.9781 ± 0.0020 | 0.9788 ± 0.0020 | 0.9781 ± 0.0020 | 0.9971 ± 0.0005 | 5 |
+| Ensemble (weighted voting) | 0.9781 ± 0.0018 | 0.9788 ± 0.0018 | 0.9780 ± 0.0018 | 0.9971 ± 0.0005 | 5 |
+| Ensemble (stacking) | 0.9785 ± 0.0018 | 0.9791 ± 0.0017 | 0.9784 ± 0.0018 | 0.9972 ± 0.0005 | 5 |
+
+| Comparison | A right / B wrong | B right / A wrong | Accuracy difference | 95% CI | p (McNemar) | Significant at 0.05 |
+| --- | --- | --- | --- | --- | --- | --- |
+| XGBoost vs TextCNN | 187 | 476 | -0.0200 | [-0.0235, -0.0166] | 4.829e-29 | yes |
+| XGBoost vs Ensemble (soft voting) | 86 | 406 | -0.0222 | [-0.0252, -0.0192] | 6.749e-47 | yes |
+| XGBoost vs Ensemble (weighted voting) | 88 | 409 | -0.0223 | [-0.0252, -0.0193] | 1.006e-46 | yes |
+| XGBoost vs Ensemble (stacking) | 112 | 435 | -0.0224 | [-0.0255, -0.0193] | 3.986e-43 | yes |
+| TextCNN vs Ensemble (soft voting) | 70 | 101 | -0.0021 | [-0.0040, -0.0003] | 0.02178 | yes |
+| TextCNN vs Ensemble (weighted voting) | 67 | 99 | -0.0022 | [-0.0040, -0.0005] | 0.01613 | yes |
+| TextCNN vs Ensemble (stacking) | 41 | 75 | -0.0024 | [-0.0038, -0.0009] | 0.002184 | yes |
+| Ensemble (soft voting) vs Ensemble (weighted voting) | 2 | 3 | -0.0001 | [-0.0003, +0.0002] | 1 | no |
+| Ensemble (soft voting) vs Ensemble (stacking) | 31 | 34 | -0.0002 | [-0.0013, +0.0009] | 0.8041 | no |
+| Ensemble (weighted voting) vs Ensemble (stacking) | 29 | 31 | -0.0001 | [-0.0012, +0.0009] | 0.8973 | no |
