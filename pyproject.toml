@@ -51,8 +51,8 @@ dev = [
 fakenews = "fakenews.cli:main"
 
 [project.urls]
-Repository = "https://github.com/OWNER/fakenews-lite"
-Issues = "https://github.com/OWNER/fakenews-lite/issues"
+Repository = "https://github.com/Mopheshi/fakenews-lite"
+Issues = "https://github.com/Mopheshi/fakenews-lite/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
