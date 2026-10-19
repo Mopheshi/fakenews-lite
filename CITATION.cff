@@ -48,14 +48,15 @@ keywords:
   - CPU Inference
   - Computational Eﬀiciency
 abstract: >-
-  Most recent work on fake news detection reaches for transformer models, which perform well but need a GPU
-  and a good deal of time to train. This paper asks a simpler question: how much accuracy is lost when those
-  resources are not available? We combine an XGBoost model over TF-IDF and part-of-speech features with a
-  TextCNN over frozen GloVe embeddings, and merge the two by soft voting. On the WELFake dataset of 72,134
-  articles the ensemble reaches an accuracy of 97.81% ± 0.20 across five random seeds, within 1.1 percentage
-  points of a fine-tuned BERT reported on the same data, using 429× fewer learned parameters. The full pipeline
-  trains in 14.9 minutes and classifies an article in 256 ms on a four-core consumer CPU with no GPU. We also
-  report two controls the literature on this dataset has left out. Removing publisher and wire-service tokens costs
-  at most 0.82 percentage points, so the result is not publisher memorisation. The part-of-speech features carry
-  a measurable syntactic signal but add no accuracy the lexical representation does not already supply, and we
-  report that null result plainly.
+  Most recent work on fake news detection reaches for transformer models, which need a GPU and long training
+  runs. We ask how much accuracy is lost when those resources are unavailable. We combine an XGBoost model over TFIDF
+  and part-of-speech features with a TextCNN over frozen GloVe embeddings, and merge the two by soft voting. On the
+  WELFake dataset of 72,134 articles the ensemble reaches 97.81%± 0.20 accuracy across five random seeds, using 256,432
+  learned parameters (5.26M including the frozen embeddings it loads but never updates) against BERT-base’s 110 million,
+  and trains in 14.9 minutes on an Intel Core i7-1165G7 with no GPU. A published BERT result on this data is 1.1 points
+  higher, though from a different split, so that comparison is indicative only. Two controls then qualify our number
+  sharply. Deleting wire-service and publisher tokens costs just 0.82 points, but withholding an entire publisher from
+  training raises the ensemble’s false positive rate from 3.3% to 21.7%, and legitimate articles carrying a wire
+  dateline are misclassified 51 times less often than those without one. Benchmark accuracy on this corpus is therefore
+  substantially a function of source provenance. Part-of-speech features add nothing the lexical representation does not
+  already supply.
