@@ -83,7 +83,7 @@ def extract_article_from_url(url: str) -> tuple[str, str, str | None]:
         return "", "", f"Could not parse the page: {error}"
 
     heading = soup.find("h1") or soup.find("title")
-    title = heading.get_text(strip=True) if heading else ""
+    title = heading.get_text(" ", strip=True) if heading else ""
 
     text = ""
     for selector in ARTICLE_SELECTORS:
@@ -92,12 +92,12 @@ def extract_article_from_url(url: str) -> tuple[str, str, str | None]:
             continue
         paragraphs = container.find_all("p")
         if paragraphs:
-            text = " ".join(paragraph.get_text(strip=True) for paragraph in paragraphs)
+            text = " ".join(paragraph.get_text(" ", strip=True) for paragraph in paragraphs)
             if len(text) > 200:
                 break
 
     if len(text) < 200:
-        text = " ".join(paragraph.get_text(strip=True) for paragraph in soup.find_all("p"))
+        text = " ".join(paragraph.get_text(" ", strip=True) for paragraph in soup.find_all("p"))
 
     text = re.sub(r"\s+", " ", text).strip()[:MAX_ARTICLE_CHARS]
 

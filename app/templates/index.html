@@ -62,19 +62,27 @@
                     <div class="confidence-fill" id="confidence-fill"></div>
                 </div>
                 <p class="confidence-text">
-                    <span id="confidence-value"></span>% confidence
+                    <span id="confidence-value"></span>% model score
                 </p>
 
                 <div class="probability-grid">
                     <div class="prob-item fake">
-                        <span class="prob-label">Fake Probability</span>
+                        <span class="prob-label">Fake score</span>
                         <span class="prob-value" id="fake-prob"></span>
                     </div>
                     <div class="prob-item legit">
-                        <span class="prob-label">Legit Probability</span>
+                        <span class="prob-label">Legit score</span>
                         <span class="prob-value" id="legit-prob"></span>
                     </div>
                 </div>
+
+                <p class="score-caveat">
+                    <strong>These are uncalibrated model scores, not probabilities.</strong>
+                    No calibration procedure was applied, so a score of 70&#37; does not mean
+                    that 70 in 100 such articles are fake. The scores are useful for ranking
+                    articles, not as estimates of likelihood. This is a research demonstrator
+                    and is not intended for use as an automated decision system.
+                </p>
 
                 <div class="extracted-content" id="extracted-content" style="display: none;">
                     <h3>Extracted Content</h3>

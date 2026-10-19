@@ -31,6 +31,10 @@ authors:
     family-names: Garga
     affiliation: Istanbul Okan University
     email: yusufgarga@gmail.com
+  - given-names: Nyibong
+    family-names: George
+    affiliation: Istanbul Okan University
+    email: nyibonggeorge123@gmail.com
 license: MIT
 version: 1.0.0
 repository-code: "https://github.com/Mopheshi/fakenews-lite"
